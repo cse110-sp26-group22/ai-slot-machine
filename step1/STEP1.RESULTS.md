@@ -11,7 +11,7 @@ Each contributor: Choose best of your 5 generated programs
 | Anirudh | 011–015 | candidate-XXX |
 | Kaung | 016–020 | candidate-019 |
 | Sofia | 021–025 | candidate-022 |
-| Yannis | 026–030 | candidate-XXX |
+| Yannis | 026–030 | candidate-X27 |
 | Lucien | 031–035 | candidate-XXX |
 | Sean | 036–040 | candidate-XXX |
 | Sirtaj | 041–045 | candidate-XXX |

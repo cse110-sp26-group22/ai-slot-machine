@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hype-Token Slot Machine | VC Satire Edition</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Hype-Token Slot Machine</h1>
+            <p class="subtitle">Burning Venture Capital Since 2024</p>
+        </header>
+
+        <div class="token-display">
+            <span class="label">Venture Tokens:</span>
+            <span id="token-balance">1000</span>
+        </div>
+
+        <div class="slot-machine">
+            <div class="reels">
+                <div class="reel" id="reel-1"><div class="reel-content">🤖</div></div>
+                <div class="reel" id="reel-2"><div class="reel-content">🚀</div></div>
+                <div class="reel" id="reel-3"><div class="reel-content">💎</div></div>
+            </div>
+            <div class="lever-container">
+                <button id="spin-btn">Burn Capital</button>
+            </div>
+        </div>
+
+        <div class="status-panel">
+            <p id="status-message">Initializing seed round...</p>
+        </div>
+
+        <div class="legend">
+            <h3>Winning Combinations (ROI)</h3>
+            <ul>
+                <li>💎 💎 💎 : Series A (10x)</li>
+                <li>🚀 🚀 🚀 : Viral Growth (5x)</li>
+                <li>🤖 🤖 🤖 : LLM Hallucination (2x)</li>
+                <li>📉 : Bankruptcy (0x)</li>
+            </ul>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

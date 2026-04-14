@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compute-O-Matic v1.0.42-beta</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="terminal-container">
+        <header>
+            <h1>COMPUTE-O-MATIC <span class="version">v1.0.42-beta</span></h1>
+            <div id="credit-display">
+                AVAILABLE CREDITS: <span id="token-count">1000</span> <span class="unit">COMPUTE TOKENS</span>
+            </div>
+        </header>
+
+        <main id="slot-machine">
+            <div class="reels">
+                <div class="reel" id="reel-1">
+                    <div class="reel-content">🧠</div>
+                </div>
+                <div class="reel" id="reel-2">
+                    <div class="reel-content">🧠</div>
+                </div>
+                <div class="reel" id="reel-3">
+                    <div class="reel-content">🧠</div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button id="inference-btn">RUN INFERENCE (10 TOKENS)</button>
+            </div>
+        </main>
+
+        <footer id="status-console">
+            <div class="console-label">STATUS LOG:</div>
+            <div id="console-output">
+                <div class="log-entry">> Model initialized...</div>
+                <div class="log-entry">> Awaiting prompt engineering...</div>
+            </div>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

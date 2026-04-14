@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Token Slot Machine</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AI Token Mine</h1>
+            <p class="subtitle">Burn Compute. Generate Tokens. Scale Indefinitely.</p>
+        </header>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span class="label">Compute Credits:</span>
+                <span id="credits">1000</span>
+            </div>
+            <div class="stat-item">
+                <span class="label">Tokens Generated:</span>
+                <span id="tokens">0</span>
+            </div>
+        </div>
+
+        <div class="slot-machine">
+            <div class="reels-container">
+                <div class="reel" id="reel1">🤖</div>
+                <div class="reel" id="reel2">🔥</div>
+                <div class="reel" id="reel3">💰</div>
+            </div>
+            <div class="controls">
+                <button id="spin-btn">MINE TOKENS (Cost: 10C)</button>
+            </div>
+        </div>
+
+        <div class="console">
+            <div class="console-header">SYSTEM LOG [DEBUG_MODE]</div>
+            <div id="log-output" class="log-output">
+                <div>[INFO] Initializing Weights...</div>
+                <div>[INFO] GPU Cluster Ready.</div>
+                <div>[INFO] Ready to scale to AGI.</div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Don't worry, these tokens are totally real and definitely have utility.</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

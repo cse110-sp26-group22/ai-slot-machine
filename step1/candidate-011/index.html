@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Burner 3000: The AGI Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>TOKEN BURNER <span class="version">v3000</span></h1>
+            <div class="hud">
+                <div class="hud-item">
+                    <span class="label">COMPUTE BUDGET</span>
+                    <span id="token-balance" class="value">5000</span>
+                    <span class="unit">TOKENS</span>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="slot-machine">
+                <div class="reels-container" id="reels">
+                    <div class="reel" id="reel-1">
+                        <div class="reel-strip" id="strip-1"></div>
+                    </div>
+                    <div class="reel" id="reel-2">
+                        <div class="reel-strip" id="strip-2"></div>
+                    </div>
+                    <div class="reel" id="reel-3">
+                        <div class="reel-strip" id="strip-3"></div>
+                    </div>
+                    <div class="overlay"></div>
+                </div>
+
+                <div class="controls">
+                    <button id="burn-btn" class="burn-button">
+                        <span class="btn-text">BURN TOKENS</span>
+                        <span class="btn-subtext">Cost: 100</span>
+                    </button>
+                    <button id="vc-btn" class="vc-button" style="display: none;">
+                        <span class="btn-text">REQUEST VC FUNDING</span>
+                        <span class="btn-subtext">Get 1000 tokens (Sell your soul)</span>
+                    </button>
+                </div>
+            </div>
+
+            <aside class="console-panel">
+                <div class="panel-header">HALLUCINATION CONSOLE</div>
+                <div id="console-log" class="console-log">
+                    <div class="log-entry">System ready. Waiting for inference...</div>
+                </div>
+            </aside>
+        </main>
+
+        <footer>
+            <div class="status-bar">
+                <span class="status-item">GPU TEMP: <span class="pulse">OPTIMAL</span></span>
+                <span class="status-item">WEIGHT DECAY: 0.0001</span>
+                <span class="status-item">HYPE LEVEL: CRITICAL</span>
+            </div>
+        </footer>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

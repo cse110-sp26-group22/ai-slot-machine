@@ -1,0 +1,278 @@
+:root {
+    --bg-color: #0d0d0d;
+    --panel-bg: #1a1a1a;
+    --accent-color: #00ff41;
+    --secondary-accent: #ffb000;
+    --danger-color: #ff3e3e;
+    --text-main: #e0e0e0;
+    --text-dim: #707070;
+    --reel-width: 120px;
+    --reel-height: 150px;
+    --symbol-height: 150px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-family: 'Courier New', Courier, monospace;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.app-container {
+    width: 900px;
+    max-width: 95vw;
+    background: #222;
+    border: 4px solid #333;
+    padding: 20px;
+    box-shadow: 0 0 50px rgba(0,0,0,0.8);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #444;
+    padding-bottom: 10px;
+}
+
+h1 {
+    font-size: 2rem;
+    letter-spacing: 4px;
+    color: var(--accent-color);
+}
+
+.version {
+    font-size: 0.8rem;
+    vertical-align: super;
+}
+
+.hud-item {
+    text-align: right;
+}
+
+.label {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+}
+
+.value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--secondary-accent);
+}
+
+.unit {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+main {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 20px;
+}
+
+/* Slot Machine Styles */
+.slot-machine {
+    background: #111;
+    padding: 40px;
+    border: 10px solid #2a2a2a;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+.reels-container {
+    display: flex;
+    gap: 15px;
+    background: #000;
+    padding: 10px;
+    border: 4px solid #333;
+    position: relative;
+    overflow: hidden;
+    height: calc(var(--reel-height) + 20px);
+}
+
+.reel {
+    width: var(--reel-width);
+    height: var(--reel-height);
+    background: #080808;
+    position: relative;
+    overflow: hidden;
+}
+
+.reel-strip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.symbol {
+    height: var(--symbol-height);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 4rem;
+    user-select: none;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.8) 0%,
+        transparent 20%,
+        transparent 80%,
+        rgba(0,0,0,0.8) 100%
+    );
+    pointer-events: none;
+}
+
+/* Controls */
+.burn-button {
+    background: #440000;
+    color: #fff;
+    border: 4px solid #880000;
+    padding: 20px 40px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 5px 0 #330000;
+}
+
+.burn-button:hover {
+    background: #660000;
+}
+
+.burn-button:active {
+    transform: translateY(5px);
+    box-shadow: none;
+}
+
+.burn-button:disabled {
+    background: #333;
+    border-color: #444;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.vc-button {
+    background: #002244;
+    color: #fff;
+    border: 4px solid #004488;
+    padding: 15px 30px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 5px 0 #001122;
+    margin-top: 10px;
+}
+
+.vc-button:hover {
+    background: #003366;
+}
+
+.vc-button:active {
+    transform: translateY(5px);
+    box-shadow: none;
+}
+
+.btn-text {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.btn-subtext {
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+/* Console Panel */
+.console-panel {
+    background: var(--panel-bg);
+    border: 2px solid #444;
+    display: flex;
+    flex-direction: column;
+}
+
+.panel-header {
+    background: #333;
+    padding: 8px;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+.console-log {
+    flex-grow: 1;
+    padding: 10px;
+    font-size: 0.8rem;
+    color: var(--accent-color);
+    overflow-y: auto;
+    max-height: 400px;
+}
+
+.log-entry {
+    margin-bottom: 8px;
+    border-left: 2px solid var(--accent-color);
+    padding-left: 8px;
+}
+
+.log-entry.win { color: var(--secondary-accent); border-color: var(--secondary-accent); }
+.log-entry.loss { color: var(--danger-color); border-color: var(--danger-color); }
+
+/* Status Bar */
+.status-bar {
+    display: flex;
+    justify-content: space-around;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    border-top: 1px solid #444;
+    padding-top: 10px;
+}
+
+.pulse {
+    animation: pulse-animation 2s infinite;
+    color: var(--accent-color);
+}
+
+@keyframes pulse-animation {
+    0% { opacity: 0.4; }
+    50% { opacity: 1; }
+    100% { opacity: 0.4; }
+}
+
+/* Reel Motion */
+.spinning {
+    transition: transform 3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+}

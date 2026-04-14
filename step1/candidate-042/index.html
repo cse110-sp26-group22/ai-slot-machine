@@ -1,0 +1,252 @@
+
+<style>
+  :root { --reel-h: 180px; }
+  #machine { padding: 1.5rem 1rem; max-width: 520px; margin: 0 auto; font-family: var(--font-mono); }
+  #screen { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-primary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
+  #reels { display: flex; gap: 10px; justify-content: center; margin-bottom: 1rem; }
+  .reel-wrap { width: 120px; height: var(--reel-h); overflow: hidden; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); position: relative; }
+  .reel { display: flex; flex-direction: column; transition: transform 0s; }
+  .symbol { height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 28px; gap: 2px; flex-shrink: 0; }
+  .symbol span.lbl { font-size: 9px; color: var(--color-text-secondary); font-family: var(--font-sans); letter-spacing: 0.04em; text-transform: uppercase; }
+  #wallet { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+  #tokens-display { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+  #tokens-label { font-size: 11px; color: var(--color-text-secondary); font-family: var(--font-sans); }
+  #msg { min-height: 40px; font-size: 13px; font-family: var(--font-sans); color: var(--color-text-secondary); line-height: 1.5; text-align: center; padding: 0.5rem 0; border-top: 0.5px solid var(--color-border-tertiary); }
+  #spin-btn { width: 100%; padding: 0.75rem; font-size: 15px; font-weight: 500; font-family: var(--font-sans); background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); cursor: pointer; margin-bottom: 0.75rem; transition: background 0.15s; color: var(--color-text-primary); }
+  #spin-btn:hover:not(:disabled) { background: var(--color-background-secondary); }
+  #spin-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  #paytable { font-family: var(--font-sans); font-size: 12px; color: var(--color-text-secondary); border-top: 0.5px solid var(--color-border-tertiary); padding-top: 0.75rem; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 16px; }
+  .pay-row { display: contents; }
+  .pay-sym { font-size: 14px; }
+  .pay-desc { color: var(--color-text-tertiary); }
+  #history { font-family: var(--font-sans); font-size: 11px; color: var(--color-text-tertiary); height: 36px; overflow: hidden; text-align: center; margin-top: 0.5rem; line-height: 1.8; }
+  .win-flash { animation: flash 0.4s ease 3; }
+  @keyframes flash { 0%,100%{background:var(--color-background-secondary)} 50%{background:var(--color-background-success)} }
+  .lose-flash { animation: loseflash 0.3s ease 2; }
+  @keyframes loseflash { 0%,100%{background:var(--color-background-secondary)} 50%{background:var(--color-background-danger)} }
+  #cost-hint { font-size: 11px; color: var(--color-text-tertiary); font-family: var(--font-sans); text-align: center; margin-bottom: 0.5rem; }
+  #stats { display: flex; gap: 8px; margin-bottom: 0.75rem; }
+  .stat-card { flex: 1; background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 0.5rem 0.75rem; text-align: center; }
+  .stat-val { font-size: 16px; font-weight: 500; color: var(--color-text-primary); }
+  .stat-lbl { font-size: 10px; color: var(--color-text-secondary); font-family: var(--font-sans); text-transform: uppercase; letter-spacing: 0.04em; }
+</style>
+
+<div id="machine">
+  <h2 class="sr-only">AI Token Slot Machine — spin to win or lose context tokens</h2>
+
+  <div id="screen">
+    <div id="wallet">
+      <div>
+        <div id="tokens-label">Context Window Balance</div>
+        <div id="tokens-display">🪙 1000 tokens</div>
+      </div>
+      <div style="text-align:right">
+        <div id="tokens-label">Net P&L</div>
+        <div id="pnl" style="font-size:18px;font-weight:500">+0</div>
+      </div>
+    </div>
+
+    <div id="reels">
+      <div class="reel-wrap"><div class="reel" id="r0"></div></div>
+      <div class="reel-wrap"><div class="reel" id="r1"></div></div>
+      <div class="reel-wrap"><div class="reel" id="r2"></div></div>
+    </div>
+
+    <div id="msg">Pull the lever and pray to the attention mechanism.</div>
+  </div>
+
+  <div id="stats">
+    <div class="stat-card"><div class="stat-val" id="s-spins">0</div><div class="stat-lbl">Spins</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-wins">0</div><div class="stat-lbl">Wins</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-biggest">0</div><div class="stat-lbl">Best win</div></div>
+  </div>
+
+  <div id="cost-hint">Each spin costs 10 tokens (inference is never free)</div>
+  <button id="spin-btn">⚡ SPIN (10 tokens)</button>
+
+  <div id="paytable">
+    <div style="grid-column:1/-1;font-size:11px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em">Pay table</div>
+    <div class="pay-sym">🤖🤖🤖</div><div class="pay-desc">AGI achieved — 500 tokens</div>
+    <div class="pay-sym">🧠🧠🧠</div><div class="pay-desc">Full context — 200 tokens</div>
+    <div class="pay-sym">💀💀💀</div><div class="pay-desc">Hallucination jackpot — 150 tokens</div>
+    <div class="pay-sym">📎📎📎</div><div class="pay-desc">Paperclip maximizer — 100 tokens</div>
+    <div class="pay-sym">🔥🔥🔥</div><div class="pay-desc">GPU on fire — 75 tokens</div>
+    <div class="pay-sym">💸💸💸</div><div class="pay-desc">VC money printer — 60 tokens</div>
+    <div class="pay-sym">Any pair</div><div class="pay-desc">Context recovered — 15 tokens</div>
+    <div class="pay-sym">No match</div><div class="pay-desc">Rate limited — lose 10</div>
+  </div>
+
+  <div id="history"></div>
+</div>
+
+<script>
+const SYMBOLS = [
+  {e:'🤖', lbl:'AGI'},
+  {e:'🧠', lbl:'Context'},
+  {e:'💀', lbl:'Halluc.'},
+  {e:'📎', lbl:'Clippy'},
+  {e:'🔥', lbl:'GPU'},
+  {e:'💸', lbl:'VC Cash'},
+  {e:'⚠️', lbl:'RLHF'},
+  {e:'🎲', lbl:'Random'},
+  {e:'🌡️', lbl:'Temp=0'},
+  {e:'📊', lbl:'Tokens'},
+];
+
+const PAYOUTS = {
+  '🤖': 500, '🧠': 200, '💀': 150, '📎': 100,
+  '🔥': 75, '💸': 60
+};
+
+const WIN_MSGS = [
+  "Congratulations! You've been granted GPU access.",
+  "Your embeddings aligned perfectly. Statistically impossible.",
+  "The transformer attention head blessed you.",
+  "Even a stopped model outputs a correct token twice a day.",
+  "Temperature was set to exactly 0. Luck? No — determinism.",
+  "The model hallucinated a win and it was real.",
+  "Your prompt was so good it unlocked hidden tokens.",
+  "The attention mechanism smiled upon you today.",
+];
+
+const LOSE_MSGS = [
+  "Your tokens have been consumed by the context window.",
+  "Rate limited. The API says no.",
+  "The model confidently predicted a loss.",
+  "Insufficient tokens in prompt. Truncated.",
+  "Hallucination detected: that win was not real.",
+  "Your gradient has vanished.",
+  "The RLHF process filtered out your jackpot.",
+  "Softmax selected the wrong logit. Again.",
+  "Temperature too high. Entropy consumed your win.",
+  "Model weights updated against your favor.",
+];
+
+const PAIR_MSGS = [
+  "Partial context match. Some tokens recovered.",
+  "Two out of three neurons fired correctly.",
+  "Chain-of-thought got halfway there.",
+];
+
+let tokens = 1000, pnl = 0, spins = 0, wins = 0, biggest = 0;
+const COST = 10;
+const REEL_H = 60;
+const VISIBLE = 3;
+
+function buildReel(id) {
+  const reel = document.getElementById(id);
+  const extended = [...SYMBOLS, ...SYMBOLS, ...SYMBOLS, ...SYMBOLS];
+  reel.innerHTML = '';
+  extended.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'symbol';
+    div.innerHTML = `${s.e}<span class="lbl">${s.lbl}</span>`;
+    reel.appendChild(div);
+  });
+}
+
+['r0','r1','r2'].forEach(buildReel);
+
+function pick() {
+  return Math.floor(Math.random() * SYMBOLS.length);
+}
+
+let spinning = false;
+
+document.getElementById('spin-btn').onclick = function() {
+  if (spinning || tokens < COST) return;
+  spinning = true;
+  tokens -= COST;
+  spins++;
+  updateUI();
+  document.getElementById('spin-btn').disabled = true;
+  document.getElementById('msg').textContent = 'Processing... (billed per token)';
+
+  const results = [pick(), pick(), pick()];
+  const delays = [800, 1100, 1400];
+  const landed = [];
+
+  ['r0','r1','r2'].forEach((id, i) => {
+    const reel = document.getElementById(id);
+    const target = results[i];
+    const extraSpins = 3 + i;
+    const totalItems = SYMBOLS.length * 2 + target;
+    const offset = -(totalItems * REEL_H) + (REEL_H * Math.floor(VISIBLE / 2));
+
+    reel.style.transition = 'none';
+    reel.style.transform = 'translateY(0)';
+
+    setTimeout(() => {
+      reel.style.transition = `transform ${delays[i]}ms cubic-bezier(0.15,0.85,0.35,1)`;
+      reel.style.transform = `translateY(${offset}px)`;
+
+      setTimeout(() => {
+        landed.push(target);
+        if (landed.length === 3) resolve(results);
+      }, delays[i] + 50);
+    }, 50 + i * 100);
+  });
+};
+
+function resolve(results) {
+  const emojis = results.map(i => SYMBOLS[i].e);
+  const [a, b, c] = emojis;
+  let win = 0;
+  let msgTxt = '';
+
+  if (a === b && b === c) {
+    win = PAYOUTS[a] || 50;
+    wins++;
+    if (win > biggest) biggest = win;
+    msgTxt = WIN_MSGS[Math.floor(Math.random() * WIN_MSGS.length)];
+    document.getElementById('screen').classList.remove('lose-flash');
+    void document.getElementById('screen').offsetWidth;
+    document.getElementById('screen').classList.add('win-flash');
+  } else if (a === b || b === c || a === c) {
+    win = 15;
+    msgTxt = PAIR_MSGS[Math.floor(Math.random() * PAIR_MSGS.length)];
+    wins++;
+    document.getElementById('screen').classList.remove('lose-flash');
+    void document.getElementById('screen').offsetWidth;
+    document.getElementById('screen').classList.add('win-flash');
+  } else {
+    msgTxt = LOSE_MSGS[Math.floor(Math.random() * LOSE_MSGS.length)];
+    document.getElementById('screen').classList.remove('win-flash');
+    void document.getElementById('screen').offsetWidth;
+    document.getElementById('screen').classList.add('lose-flash');
+  }
+
+  tokens += win;
+  pnl += (win - COST);
+  updateUI(win, emojis);
+  addHistory(emojis, win);
+
+  let fullMsg = win > 0 ? `+${win} tokens! ${msgTxt}` : msgTxt;
+  document.getElementById('msg').textContent = fullMsg;
+
+  spinning = false;
+  document.getElementById('spin-btn').disabled = tokens < COST;
+  if (tokens < COST) {
+    document.getElementById('spin-btn').textContent = 'Out of tokens. Deprecated.';
+    document.getElementById('msg').textContent = "You've run out of tokens. The model has stopped generating. This is a feature, not a bug.";
+  }
+}
+
+function updateUI(win, emojis) {
+  document.getElementById('tokens-display').textContent = `🪙 ${tokens} tokens`;
+  const pnlEl = document.getElementById('pnl');
+  pnlEl.textContent = (pnl >= 0 ? '+' : '') + pnl;
+  pnlEl.style.color = pnl >= 0 ? 'var(--color-text-success)' : 'var(--color-text-danger)';
+  document.getElementById('s-spins').textContent = spins;
+  document.getElementById('s-wins').textContent = wins;
+  document.getElementById('s-biggest').textContent = biggest > 0 ? '+' + biggest : '0';
+}
+
+function addHistory(emojis, win) {
+  const el = document.getElementById('history');
+  const entry = emojis.join('') + (win > 0 ? ` +${win}` : ' -' + COST);
+  el.innerHTML = entry + (el.innerHTML ? ' · ' + el.innerHTML : '');
+  const parts = el.innerHTML.split(' · ');
+  if (parts.length > 6) el.innerHTML = parts.slice(0, 6).join(' · ');
+}
+</script>

@@ -1,0 +1,291 @@
+
+<style>
+  :root { --reel-h: 90px; }
+  #slotApp { font-family: var(--font-sans); padding: 1.5rem 1rem; max-width: 480px; margin: 0 auto; text-align: center; }
+  #bankBar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+  .bank-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 0.6rem 1rem; font-size: 13px; color: var(--color-text-secondary); }
+  .bank-card span { display: block; font-size: 20px; font-weight: 500; color: var(--color-text-primary); margin-top: 2px; }
+  #machine { background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
+  #reels { display: flex; gap: 10px; justify-content: center; margin-bottom: 1.25rem; }
+  .reel-wrap { width: 90px; height: var(--reel-h); overflow: hidden; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-secondary); position: relative; }
+  .reel-wrap::before, .reel-wrap::after { content: ''; position: absolute; left: 0; right: 0; height: 28px; z-index: 2; pointer-events: none; }
+  .reel-wrap::before { top: 0; background: linear-gradient(to bottom, var(--color-background-secondary), transparent); }
+  .reel-wrap::after { bottom: 0; background: linear-gradient(to top, var(--color-background-secondary), transparent); }
+  .reel-inner { display: flex; flex-direction: column; align-items: center; transition: transform 0s; }
+  .reel-item { height: var(--reel-h); display: flex; flex-direction: column; align-items: center; justify-content: center; width: 90px; flex-shrink: 0; font-size: 26px; gap: 3px; }
+  .reel-item small { font-size: 10px; color: var(--color-text-secondary); font-family: var(--font-sans); line-height: 1; }
+  #betRow { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 1rem; }
+  #betRow label { font-size: 13px; color: var(--color-text-secondary); }
+  #betInput { width: 70px; padding: 5px 8px; font-size: 14px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-secondary); color: var(--color-text-primary); text-align: center; }
+  #spinBtn { background: var(--color-text-primary); color: var(--color-background-primary); border: none; border-radius: var(--border-radius-md); padding: 0.65rem 2rem; font-size: 15px; font-weight: 500; cursor: pointer; transition: opacity .15s, transform .1s; }
+  #spinBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+  #spinBtn:not(:disabled):active { transform: scale(0.97); }
+  #msg { min-height: 44px; font-size: 14px; color: var(--color-text-secondary); margin: 0.5rem 0; display: flex; align-items: center; justify-content: center; }
+  #msg.win { color: var(--color-text-success); font-weight: 500; font-size: 15px; }
+  #msg.lose { color: var(--color-text-danger); font-size: 13px; }
+  #history { font-size: 12px; color: var(--color-text-tertiary); margin-top: 0.75rem; min-height: 18px; }
+  #payTable { margin-top: 1rem; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); overflow: hidden; }
+  #payTable summary { padding: 0.6rem 1rem; font-size: 12px; color: var(--color-text-secondary); cursor: pointer; text-align: left; background: var(--color-background-secondary); }
+  .pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .pay-row { display: flex; align-items: center; gap: 6px; padding: 5px 12px; font-size: 12px; color: var(--color-text-secondary); border-top: 0.5px solid var(--color-border-tertiary); }
+  .pay-row span:last-child { margin-left: auto; color: var(--color-text-primary); font-weight: 500; }
+  #winFlash { position: fixed; inset: 0; pointer-events: none; z-index: 100; }
+</style>
+<div id="slotApp">
+  <h2 style="font-size:18px;font-weight:500;margin:0 0 1rem;color:var(--color-text-primary)">Token Casino <span style="font-size:13px;font-weight:400;color:var(--color-text-tertiary)">— where your compute goes to die</span></h2>
+  <div id="bankBar">
+    <div class="bank-card">Tokens<span id="wallet">500</span></div>
+    <div class="bank-card">All-time won<span id="totalWon">0</span></div>
+    <div class="bank-card">All-time lost<span id="totalLost">0</span></div>
+  </div>
+  <div id="machine">
+    <div id="reels">
+      <div class="reel-wrap" id="r0"><div class="reel-inner"></div></div>
+      <div class="reel-wrap" id="r1"><div class="reel-inner"></div></div>
+      <div class="reel-wrap" id="r2"><div class="reel-inner"></div></div>
+    </div>
+    <div id="betRow">
+      <label>Bet:</label>
+      <input type="number" id="betInput" value="10" min="1" max="500" step="1">
+      <span style="font-size:12px;color:var(--color-text-tertiary)">tokens</span>
+    </div>
+    <button id="spinBtn">Spin the model</button>
+  </div>
+  <div id="msg">Insert tokens to start hallucinating...</div>
+  <div id="history"></div>
+  <details id="payTable">
+    <summary>Payout table — spoiler: house wins</summary>
+    <div class="pay-grid" id="payGrid"></div>
+  </details>
+</div>
+<canvas id="winFlash" width="1" height="1"></canvas>
+<script>
+const SYMBOLS = [
+  { e: '🤖', label: 'AI hype', w: 20 },
+  { e: '🧠', label: 'Big brain', w: 18 },
+  { e: '📉', label: 'ROI', w: 16 },
+  { e: '💸', label: 'Burn rate', w: 15 },
+  { e: '🦙', label: 'Open source', w: 12 },
+  { e: '⚡', label: 'GPU bill', w: 10 },
+  { e: '🎯', label: 'Alignment', w: 7 },
+  { e: '💎', label: 'AGI soon', w: 2 },
+];
+
+const PAYOUT = {
+  '🎯🎯🎯': { label: 'Triple Alignment', mult: 50 },
+  '💎💎💎': { label: 'AGI Achieved™', mult: 100 },
+  '⚡⚡⚡': { label: 'Out of VRAM', mult: 25 },
+  '🦙🦙🦙': { label: 'Open source wins', mult: 20 },
+  '💸💸💸': { label: 'Runway depleted', mult: 15 },
+  '📉📉📉': { label: 'Zero ROI', mult: 12 },
+  '🧠🧠🧠': { label: 'Big brain moment', mult: 8 },
+  '🤖🤖🤖': { label: 'More AI!', mult: 5 },
+  '🤖🤖':   { label: 'AI pair (any pos)', mult: 1.5 },
+};
+
+const WIN_MSGS = [
+  (m,t) => `${m}! The model predicted correctly for once. +${t} tokens.`,
+  (m,t) => `${m}! Even a stopped clock... +${t} tokens.`,
+  (m,t) => `${m}! Your investment thesis is vindicated. +${t} tokens.`,
+];
+const LOSE_MSGS = [
+  () => 'Model confidently hallucinated a loss.',
+  () => 'Tokens consumed. Weights updated. Nothing learned.',
+  () => 'Inference failed. Check your prompt engineering.',
+  () => 'This is fine. The compute was a learning experience.',
+  () => 'Loss function minimized... by losing your tokens.',
+];
+
+let wallet = 500, totalWon = 0, totalLost = 0, spinning = false;
+const historyLog = [];
+
+function weightedRandom() {
+  const total = SYMBOLS.reduce((a,s) => a + s.w, 0);
+  let r = Math.random() * total;
+  for (const s of SYMBOLS) { r -= s.w; if (r <= 0) return s; }
+  return SYMBOLS[0];
+}
+
+function buildReel(inner) {
+  inner.innerHTML = '';
+  const items = [];
+  for (let i = 0; i < 30; i++) {
+    const s = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+    items.push(s);
+  }
+  items.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'reel-item';
+    div.innerHTML = `<span style="font-size:28px;line-height:1">${s.e}</span><small>${s.label}</small>`;
+    inner.appendChild(div);
+  });
+  return items;
+}
+
+const reelEls = [document.getElementById('r0'), document.getElementById('r1'), document.getElementById('r2')];
+const inners = reelEls.map(r => r.querySelector('.reel-inner'));
+inners.forEach(buildReel);
+
+function getPayMultiplier(results) {
+  const key3 = results.map(r=>r.e).join('');
+  if (PAYOUT[key3]) return PAYOUT[key3];
+  const counts = {};
+  results.forEach(r => counts[r.e] = (counts[r.e]||0)+1);
+  for (const e in counts) {
+    if (counts[e] >= 2) {
+      const k = e+e;
+      if (PAYOUT[k]) return PAYOUT[k];
+    }
+  }
+  return null;
+}
+
+function updateUI() {
+  document.getElementById('wallet').textContent = wallet;
+  document.getElementById('totalWon').textContent = totalWon;
+  document.getElementById('totalLost').textContent = totalLost;
+}
+
+function showMsg(text, cls) {
+  const el = document.getElementById('msg');
+  el.textContent = text;
+  el.className = cls || '';
+}
+
+function addHistory(text) {
+  historyLog.unshift(text);
+  if (historyLog.length > 3) historyLog.pop();
+  document.getElementById('history').textContent = historyLog.join(' · ');
+}
+
+function celebrate() {
+  const canvas = document.getElementById('winFlash');
+  const W = window.innerWidth, H = window.innerHeight;
+  canvas.width = W; canvas.height = H;
+  canvas.style.width = W+'px'; canvas.style.height = H+'px';
+  const ctx = canvas.getContext('2d');
+  const pieces = Array.from({length:60}, () => ({
+    x: Math.random()*W, y: -10,
+    vx: (Math.random()-0.5)*4, vy: Math.random()*4+2,
+    r: Math.random()*6+3,
+    c: ['#FAC775','#5DCAA5','#85B7EB','#F0997B','#AFA9EC'][Math.floor(Math.random()*5)],
+    rot: Math.random()*360, rv: (Math.random()-0.5)*8
+  }));
+  let frames = 0;
+  function draw() {
+    ctx.clearRect(0,0,W,H);
+    pieces.forEach(p => {
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle = p.c; ctx.fillRect(-p.r,-p.r,p.r*2,p.r*2);
+      ctx.restore();
+      p.x+=p.vx; p.y+=p.vy; p.rot+=p.rv; p.vy+=0.1;
+    });
+    frames++;
+    if (frames < 80) requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,W,H);
+  }
+  draw();
+}
+
+async function spin() {
+  if (spinning) return;
+  const bet = parseInt(document.getElementById('betInput').value) || 10;
+  if (bet < 1) return showMsg('Bet at least 1 token.', 'lose');
+  if (bet > wallet) return showMsg('Insufficient tokens. Have you tried raising a Series B?', 'lose');
+
+  spinning = true;
+  document.getElementById('spinBtn').disabled = true;
+  wallet -= bet;
+  totalLost += bet;
+  updateUI();
+  showMsg('Querying the universe...');
+
+  const results = [weightedRandom(), weightedRandom(), weightedRandom()];
+
+  const delays = [900, 1250, 1600];
+  const promises = inners.map((inner, idx) => new Promise(res => {
+    const items = buildReel(inner);
+    const targetIdx = Math.floor(Math.random() * 18) + 5;
+    const itemH = 90;
+    const spinTo = targetIdx * itemH;
+    inner.style.transition = 'none';
+    inner.style.transform = 'translateY(0)';
+    requestAnimationFrame(() => {
+      inner.style.transition = `transform ${delays[idx]}ms cubic-bezier(0.25,0.1,0.25,1)`;
+      inner.style.transform = `translateY(-${spinTo}px)`;
+
+      setTimeout(() => {
+        inner.style.transition = 'none';
+        inner.innerHTML = '';
+        const s = results[idx];
+        for (let i = 0; i < 5; i++) {
+          const sym = i === 2 ? s : SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)];
+          const div = document.createElement('div');
+          div.className = 'reel-item';
+          div.innerHTML = `<span style="font-size:28px;line-height:1">${sym.e}</span><small>${sym.label}</small>`;
+          inner.appendChild(div);
+        }
+        inner.style.transform = 'translateY(-180px)';
+        res();
+      }, delays[idx] + 50);
+    });
+  }));
+
+  await Promise.all(promises);
+
+  const payout = getPayMultiplier(results);
+  await new Promise(r => setTimeout(r, 120));
+
+  if (payout) {
+    const won = Math.round(bet * payout.mult);
+    wallet += won;
+    totalWon += won;
+    totalLost -= bet;
+    const msg = WIN_MSGS[Math.floor(Math.random()*WIN_MSGS.length)](payout.label, won);
+    showMsg(msg, 'win');
+    addHistory(`+${won}`);
+    celebrate();
+  } else {
+    const msg = LOSE_MSGS[Math.floor(Math.random()*LOSE_MSGS.length)]();
+    showMsg(msg, 'lose');
+    addHistory(`-${bet}`);
+  }
+
+  if (wallet <= 0) {
+    wallet = 0;
+    showMsg('Token budget exhausted. Welcome to the free tier.', 'lose');
+  }
+
+  updateUI();
+  spinning = false;
+  document.getElementById('spinBtn').disabled = false;
+}
+
+document.getElementById('spinBtn').addEventListener('click', spin);
+document.getElementById('betInput').addEventListener('change', () => {
+  let v = parseInt(document.getElementById('betInput').value) || 1;
+  v = Math.max(1, Math.min(wallet, v));
+  document.getElementById('betInput').value = v;
+});
+
+const payGrid = document.getElementById('payGrid');
+const payEntries = [
+  ['💎💎💎', 'AGI Achieved™', '100x'],
+  ['🎯🎯🎯', 'Triple alignment', '50x'],
+  ['⚡⚡⚡', 'Out of VRAM', '25x'],
+  ['🦙🦙🦙', 'Open source wins', '20x'],
+  ['💸💸💸', 'Runway depleted', '15x'],
+  ['📉📉📉', 'Zero ROI', '12x'],
+  ['🧠🧠🧠', 'Big brain', '8x'],
+  ['🤖🤖🤖', 'More AI!', '5x'],
+  ['🤖🤖', 'Any pair of bots', '1.5x'],
+];
+payEntries.forEach(([sym, label, mult]) => {
+  const row = document.createElement('div');
+  row.className = 'pay-row';
+  row.innerHTML = `<span style="font-size:14px">${sym}</span><span style="font-size:11px">${label}</span><span>${mult}</span>`;
+  payGrid.appendChild(row);
+});
+
+updateUI();
+</script>

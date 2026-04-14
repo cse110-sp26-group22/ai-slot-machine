@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Token Slots — Burn Your Context Window</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="casino">
+    <header class="header">
+      <div class="title-row">
+        <span class="title-icon">🤖</span>
+        <h1 class="title">AI TOKEN SLOTS</h1>
+        <span class="title-icon">🤖</span>
+      </div>
+      <p class="subtitle">Spend tokens to win tokens — just like a real LLM API</p>
+    </header>
+
+    <div class="token-bar">
+      <div class="balance-block">
+        <span class="balance-label">TOKEN BALANCE</span>
+        <span class="balance-value" id="balance">1000</span>
+        <span class="balance-unit">tkn</span>
+      </div>
+      <div class="balance-block">
+        <span class="balance-label">TOKENS WON</span>
+        <span class="balance-value won" id="total-won">0</span>
+        <span class="balance-unit">tkn</span>
+      </div>
+      <div class="balance-block">
+        <span class="balance-label">TOKENS BURNED</span>
+        <span class="balance-value burned" id="total-lost">0</span>
+        <span class="balance-unit">tkn</span>
+      </div>
+    </div>
+
+    <div class="machine">
+      <div class="machine-top">
+        <div class="light-strip" id="lights"></div>
+      </div>
+
+      <div class="reels-frame">
+        <div class="reels-window">
+          <div class="reel-col" id="reel-0">
+            <div class="reel-track" id="track-0"></div>
+          </div>
+          <div class="reel-divider"></div>
+          <div class="reel-col" id="reel-1">
+            <div class="reel-track" id="track-1"></div>
+          </div>
+          <div class="reel-divider"></div>
+          <div class="reel-col" id="reel-2">
+            <div class="reel-track" id="track-2"></div>
+          </div>
+        </div>
+        <div class="payline"></div>
+      </div>
+
+      <div class="result-banner" id="result-banner">
+        <span id="result-text">Insert tokens to begin inference...</span>
+      </div>
+
+      <div class="controls">
+        <div class="bet-section">
+          <span class="bet-label">BET (tokens)</span>
+          <div class="bet-buttons">
+            <button class="bet-btn" data-bet="10">10</button>
+            <button class="bet-btn active" data-bet="25">25</button>
+            <button class="bet-btn" data-bet="50">50</button>
+            <button class="bet-btn" data-bet="100">100</button>
+            <button class="bet-btn" data-bet="max">MAX</button>
+          </div>
+          <span class="current-bet">Current bet: <strong id="bet-display">25</strong> tkn</span>
+        </div>
+
+        <button class="spin-btn" id="spin-btn">
+          <span class="spin-label">SPIN</span>
+          <span class="spin-sub">▶ Run Inference</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="paytable">
+      <h2 class="paytable-title">PAYTABLE — Token Payouts</h2>
+      <div class="paytable-grid" id="paytable-grid"></div>
+    </div>
+
+    <div class="history-section">
+      <h3 class="history-title">Inference Log</h3>
+      <ul class="history-list" id="history-list">
+        <li class="history-item placeholder">No spins yet. The model is idle.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="broke-modal">
+    <div class="modal">
+      <div class="modal-icon">💸</div>
+      <h2>OUT OF TOKENS</h2>
+      <p>Your context window is empty.<br>The model has been deprecated.<br>Please subscribe to a higher tier.</p>
+      <button class="modal-btn" id="refill-btn">Refill Tokens (Free Demo)</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

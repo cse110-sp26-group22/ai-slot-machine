@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TokenSlot™ — The AI Casino</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="casino-wrapper">
+    <header>
+      <h1>TOKEN<span>SLOT</span>™</h1>
+      <p class="tagline">Where your prompts go to die</p>
+    </header>
+
+    <div class="token-display">
+      <div class="token-count">
+        <span class="token-icon">🪙</span>
+        <span id="token-count">100</span>
+        <span class="token-label">tokens</span>
+      </div>
+      <div class="cost-label">Cost: <strong>10 tokens</strong> per spin</div>
+    </div>
+
+    <div class="machine">
+      <div class="machine-top">
+        <div class="light-row">
+          <span class="bulb" id="b0"></span>
+          <span class="bulb" id="b1"></span>
+          <span class="bulb" id="b2"></span>
+          <span class="bulb" id="b3"></span>
+          <span class="bulb" id="b4"></span>
+        </div>
+      </div>
+
+      <div class="reels-container">
+        <div class="reel-window">
+          <div class="reel" id="reel0">
+            <div class="reel-inner" id="inner0"></div>
+          </div>
+        </div>
+        <div class="reel-window">
+          <div class="reel" id="reel1">
+            <div class="reel-inner" id="inner1"></div>
+          </div>
+        </div>
+        <div class="reel-window">
+          <div class="reel" id="reel2">
+            <div class="reel-inner" id="inner2"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="payline"></div>
+
+      <div class="result-banner" id="result-banner"></div>
+
+      <div class="controls">
+        <button id="spin-btn" class="spin-btn">SPIN <span class="spin-sub">(-10 tokens)</span></button>
+      </div>
+    </div>
+
+    <div class="paytable">
+      <h3>📋 Paytable</h3>
+      <table>
+        <tr><td>🤖🤖🤖</td><td>HALLUCINATION JACKPOT</td><td class="pay">+500</td></tr>
+        <tr><td>💀💀💀</td><td>DEPRECATED</td><td class="pay">+200</td></tr>
+        <tr><td>🧠🧠🧠</td><td>CONTEXT WINDOW FULL</td><td class="pay">+150</td></tr>
+        <tr><td>📎📎📎</td><td>CLIPPY RETURNS</td><td class="pay">+100</td></tr>
+        <tr><td>🔥🔥🔥</td><td>GPU ON FIRE</td><td class="pay">+75</td></tr>
+        <tr><td>💬💬💬</td><td>INFINITE TOKENS</td><td class="pay">+50</td></tr>
+        <tr><td>Any pair</td><td>Partial refund</td><td class="pay">+5</td></tr>
+      </table>
+    </div>
+
+    <div class="log-panel">
+      <h3>📜 Audit Log</h3>
+      <ul id="log"></ul>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="modal">
+      <p id="modal-msg"></p>
+      <button id="modal-btn">OK</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

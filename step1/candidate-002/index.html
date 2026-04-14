@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TOKENIZER 9000 — The AI Slot Machine</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="casino">
+    <header class="marquee-wrap">
+      <div class="marquee">
+        ⚡ TOKENIZER 9000 ⚡ &nbsp;|&nbsp; SPEND TOKENS TO WIN TOKENS &nbsp;|&nbsp;
+        NOT FINANCIAL ADVICE &nbsp;|&nbsp; MAY HALLUCINATE JACKPOTS &nbsp;|&nbsp;
+        ⚡ TOKENIZER 9000 ⚡ &nbsp;|&nbsp; SPEND TOKENS TO WIN TOKENS &nbsp;|&nbsp;
+        NOT FINANCIAL ADVICE &nbsp;|&nbsp; MAY HALLUCINATE JACKPOTS &nbsp;|&nbsp;
+      </div>
+    </header>
+
+    <h1 class="title">
+      <span class="title-ai">AI</span> SLOT MACHINE
+      <div class="subtitle">Burning your context window one spin at a time</div>
+    </h1>
+
+    <div class="machine">
+      <!-- Token display -->
+      <div class="token-bar">
+        <div class="token-display">
+          <span class="token-icon">🪙</span>
+          <span class="token-label">TOKENS</span>
+          <span class="token-count" id="token-count">100</span>
+        </div>
+        <div class="token-display bet-display">
+          <span class="token-icon">💸</span>
+          <span class="token-label">BET</span>
+          <div class="bet-controls">
+            <button class="bet-btn" id="bet-down">−</button>
+            <span class="token-count" id="bet-amount">10</span>
+            <button class="bet-btn" id="bet-up">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reels -->
+      <div class="reels-frame">
+        <div class="reels-container">
+          <div class="reel-wrapper">
+            <div class="reel" id="reel-0">
+              <div class="reel-inner" id="reel-inner-0"></div>
+            </div>
+            <div class="reel-shine"></div>
+          </div>
+          <div class="reel-divider"></div>
+          <div class="reel-wrapper">
+            <div class="reel" id="reel-1">
+              <div class="reel-inner" id="reel-inner-1"></div>
+            </div>
+            <div class="reel-shine"></div>
+          </div>
+          <div class="reel-divider"></div>
+          <div class="reel-wrapper">
+            <div class="reel" id="reel-2">
+              <div class="reel-inner" id="reel-inner-2"></div>
+            </div>
+            <div class="reel-shine"></div>
+          </div>
+        </div>
+        <div class="payline"></div>
+      </div>
+
+      <!-- Message area -->
+      <div class="message-area">
+        <div class="message" id="message">Insert tokens to play</div>
+        <div class="submessage" id="submessage">Each spin burns your precious context</div>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls">
+        <button class="spin-btn" id="spin-btn">
+          <span class="spin-btn-inner">
+            <span class="spin-icon">⚡</span> SPIN
+          </span>
+        </button>
+        <button class="max-btn" id="max-bet-btn">MAX BET</button>
+        <button class="reset-btn" id="reset-btn">NEW SESSION</button>
+      </div>
+
+      <!-- Paytable -->
+      <details class="paytable">
+        <summary>📋 View Paytable</summary>
+        <div class="paytable-grid" id="paytable-grid"></div>
+      </details>
+    </div>
+
+    <!-- Win overlay -->
+    <div class="win-overlay hidden" id="win-overlay">
+      <div class="win-content">
+        <div class="win-emoji" id="win-emoji">🎉</div>
+        <div class="win-text" id="win-text">JACKPOT!</div>
+        <div class="win-sub" id="win-sub">+500 tokens</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

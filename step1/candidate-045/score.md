@@ -1,7 +1,7 @@
 # Candidate 045
 
 - Run ID: candidate-045
-- Timestamp: 04/13/2026 11:48 PM
+- Timestamp: 2026-04-13 11:48 PM
 - Model: claude-sonnet-4-6
 - Input tokens: 8923
 - Output tokens: 2148

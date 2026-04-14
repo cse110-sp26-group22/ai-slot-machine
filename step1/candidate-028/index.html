@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Token Slot Machine</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="stars" id="stars"></div>
+
+  <div class="container">
+    <header>
+      <h1 class="title">
+        <span class="title-icon">🤖</span>
+        AI Token Slot Machine
+        <span class="title-icon">🎰</span>
+      </h1>
+      <p class="subtitle">"Powered by Infinite Hype &trade;"</p>
+    </header>
+
+    <div class="balance-panel">
+      <div class="balance-item">
+        <span class="balance-label">Token Balance</span>
+        <span class="balance-value" id="balance">1000</span>
+        <span class="balance-unit">tokens</span>
+      </div>
+      <div class="balance-item">
+        <span class="balance-label">Total Burned</span>
+        <span class="balance-value" id="total-burned">0</span>
+        <span class="balance-unit">tokens</span>
+      </div>
+      <div class="balance-item">
+        <span class="balance-label">Win Streak</span>
+        <span class="balance-value" id="win-streak">0</span>
+        <span class="balance-unit">claims</span>
+      </div>
+    </div>
+
+    <div class="machine">
+      <div class="machine-top">
+        <div class="model-badge" id="model-badge">GPT-∞ Turbo Ultra Pro Max</div>
+      </div>
+
+      <div class="reels-container">
+        <div class="reel-wrapper" id="reel-0">
+          <div class="reel" id="reel-strip-0">
+            <div class="symbol">🤖</div>
+          </div>
+          <div class="reel-shine"></div>
+        </div>
+        <div class="reel-divider"></div>
+        <div class="reel-wrapper" id="reel-1">
+          <div class="reel" id="reel-strip-1">
+            <div class="symbol">🧠</div>
+          </div>
+          <div class="reel-shine"></div>
+        </div>
+        <div class="reel-divider"></div>
+        <div class="reel-wrapper" id="reel-2">
+          <div class="reel" id="reel-strip-2">
+            <div class="symbol">💾</div>
+          </div>
+          <div class="reel-shine"></div>
+        </div>
+      </div>
+
+      <div class="payline"></div>
+
+      <div class="status-panel">
+        <div class="status-text" id="status">Ready to hallucinate? Place your bet!</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="bet-section">
+        <span class="bet-label">Inference Cost:</span>
+        <div class="bet-buttons">
+          <button class="bet-btn" data-amount="10">10</button>
+          <button class="bet-btn active" data-amount="25">25</button>
+          <button class="bet-btn" data-amount="50">50</button>
+          <button class="bet-btn" data-amount="100">100</button>
+        </div>
+        <span class="bet-display">Bet: <span id="current-bet">25</span> tokens</span>
+      </div>
+
+      <button class="spin-btn" id="spin-btn">
+        <span class="spin-icon">⚡</span>
+        RUN INFERENCE
+        <span class="spin-icon">⚡</span>
+      </button>
+
+      <button class="refill-btn" id="refill-btn">Get VC Funding (Reset)</button>
+    </div>
+
+    <div class="paytable">
+      <h3>Payout Table <span class="paytable-hint">(multipliers × bet)</span></h3>
+      <div class="pay-rows" id="pay-rows"></div>
+    </div>
+
+    <div class="log-panel">
+      <h3>Inference Log <button class="clear-log-btn" id="clear-log">Clear</button></h3>
+      <div class="log-entries" id="log-entries">
+        <div class="log-entry log-info">System initialized. Context window: 128k tokens of pure cope.</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

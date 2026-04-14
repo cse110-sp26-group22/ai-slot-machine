@@ -1,0 +1,305 @@
+<style>
+  :root { --reel-size: 90px; }
+  #slot-app { padding: 1.5rem 1rem; max-width: 520px; margin: 0 auto; font-family: var(--font-sans); }
+  .machine-frame { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-lg); padding: 1.5rem; }
+  .machine-title { text-align: center; font-size: 22px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 4px; }
+  .machine-sub { text-align: center; font-size: 13px; color: var(--color-text-secondary); margin: 0 0 1.25rem; }
+  .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 1.25rem; }
+  .stat-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 10px; text-align: center; }
+  .stat-label { font-size: 11px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.04em; display: block; margin-bottom: 2px; }
+  .stat-val { font-size: 20px; font-weight: 500; color: var(--color-text-primary); }
+  .reels-wrapper { background: var(--color-background-primary); border: 0.5px solid var(--color-border-primary); border-radius: var(--border-radius-md); padding: 1rem; margin-bottom: 1rem; display: flex; justify-content: center; gap: 8px; position: relative; }
+  .payline { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); height: 2px; background: #E24B4A; opacity: 0.5; pointer-events: none; }
+  .reel-col { width: var(--reel-size); height: var(--reel-size); overflow: hidden; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); background: var(--color-background-secondary); position: relative; }
+  .reel-strip { display: flex; flex-direction: column; transition: transform 0.05s linear; }
+  .reel-symbol { width: var(--reel-size); height: var(--reel-size); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 32px; user-select: none; flex-shrink: 0; }
+  .reel-symbol span.sym-label { font-size: 9px; color: var(--color-text-secondary); margin-top: 2px; }
+  .spin-btn { width: 100%; padding: 14px; font-size: 16px; font-weight: 500; background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); color: var(--color-text-primary); cursor: pointer; transition: background 0.15s, transform 0.1s; letter-spacing: 0.01em; }
+  .spin-btn:hover:not(:disabled) { background: var(--color-background-secondary); }
+  .spin-btn:active:not(:disabled) { transform: scale(0.98); }
+  .spin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .msg-box { min-height: 40px; text-align: center; padding: 10px; font-size: 14px; color: var(--color-text-secondary); border-radius: var(--border-radius-md); transition: all 0.2s; }
+  .msg-box.win { color: #0F6E56; background: #E1F5EE; border: 0.5px solid #9FE1CB; }
+  .msg-box.lose { color: #5F5E5A; }
+  .msg-box.jackpot { color: #3C3489; background: #EEEDFE; border: 0.5px solid #CECBF6; }
+  .paytable { margin-top: 1rem; font-size: 12px; }
+  .paytable summary { cursor: pointer; color: var(--color-text-secondary); font-size: 12px; padding: 6px 0; }
+  .paytable-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+  .pt-row { display: flex; align-items: center; gap: 6px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 6px 8px; font-size: 12px; }
+  .pt-syms { font-size: 16px; }
+  .pt-payout { margin-left: auto; font-weight: 500; color: var(--color-text-primary); }
+  .bust-overlay { display: none; position: absolute; inset: 0; background: rgba(220,80,80,0.12); border-radius: var(--border-radius-md); align-items: center; justify-content: center; font-size: 13px; color: #A32D2D; font-weight: 500; }
+</style>
+
+<div id=\"slot-app\">
+  <h2 class=\"sr-only\">AI Token Slot Machine — spend context, win hallucinations.</h2>
+  <div class=\"machine-frame\">
+    <p class=\"machine-title\">Token Casino</p>
+    <p class=\"machine-sub\">Burn context, maybe win. Just like inference.</p>
+
+    <div class=\"stats-row\">
+      <div class=\"stat-card\">
+        <span class=\"stat-label\">Tokens</span>
+        <span class=\"stat-val\" id=\"balance\">100</span>
+      </div>
+      <div class=\"stat-card\">
+        <span class=\"stat-label\">Bet / spin</span>
+        <span class=\"stat-val\">5</span>
+      </div>
+      <div class=\"stat-card\">
+        <span class=\"stat-label\">Winnings</span>
+        <span class=\"stat-val\" id=\"winnings\">0</span>
+      </div>
+    </div>
+
+    <div class=\"reels-wrapper\" id=\"reels-wrapper\">
+      <div class=\"reel-col\" id=\"reel0\"><div class=\"reel-strip\" id=\"strip0\"></div></div>
+      <div class=\"reel-col\" id=\"reel1\"><div class=\"reel-strip\" id=\"strip1\"></div></div>
+      <div class=\"reel-col\" id=\"reel2\"><div class=\"reel-strip\" id=\"strip2\"></div></div>
+      <div class=\"payline\"></div>
+    </div>
+
+    <div class=\"msg-box\" id=\"msg-box\">Pull the lever. Lose your context window.</div>
+
+    <button class=\"spin-btn\" id=\"spin-btn\" onclick=\"spin()\">Spin (costs 5 tokens)</button>
+
+    <details class=\"paytable\">
+      <summary>Paytable — what pays what</summary>
+      <div class=\"paytable-grid\" id=\"paytable-grid\"></div>
+    </details>
+  </div>
+</div>
+
+<script>
+const SYMBOLS = [
+  { id: 'gpu',   em: '🔥', label: 'GPU Fire',    weight: 8  },
+  { id: 'token', em: '🪙', label: 'Token',        weight: 12 },
+  { id: 'bug',   em: '🐛', label: 'Bug',          weight: 10 },
+  { id: 'robot', em: '🤖', label: 'Robot',        weight: 7  },
+  { id: 'brain', em: '🧠', label: 'Big Brain',    weight: 6  },
+  { id: 'ghost', em: '👻', label: 'Hallucination',weight: 10 },
+  { id: 'chart', em: '📈', label: 'Loss Curve',   weight: 9  },
+  { id: 'key',   em: '🔑', label: 'API Key',      weight: 5  },
+];
+
+const PAYOUTS = [
+  { ids: ['key','key','key'],   mult: 50, label: 'API Key jackpot!' },
+  { ids: ['brain','brain','brain'], mult: 30, label: 'Big Brain 3x!' },
+  { ids: ['robot','robot','robot'], mult: 20, label: 'Robot uprising!' },
+  { ids: ['gpu','gpu','gpu'],   mult: 15, label: 'GPU meltdown!' },
+  { ids: ['token','token','token'], mult: 10, label: 'Token rain!' },
+  { ids: ['chart','chart','chart'], mult: 8, label: 'Loss goes up!' },
+  { ids: ['bug','bug','bug'],   mult: 6,  label: 'Three bugs = feature!' },
+  { ids: ['ghost','ghost','ghost'], mult: 5, label: 'Hallucination x3!' },
+  { ids: null, mult: 2, label: 'Any pair', isPair: true },
+];
+
+const LOSE_QUIPS = [
+  \"Model outputs: nothing useful.\",
+  \"Tokens burned. Answers vague.\",
+  \"The AI confidently got it wrong.\",
+  \"404: coherence not found.\",
+  \"Prompt injected, wallet depleted.\",
+  \"Fine-tuned to lose.\",
+  \"Context window: wasted.\",
+  \"Rate limited by the universe.\",
+  \"GPU warm. Wallet cold.\",
+  \"The model hallucinated a win.\",
+];
+
+const BET = 5;
+let balance = 100;
+let totalWin = 0;
+let spinning = false;
+let animFrames = [null,null,null];
+
+function weightedRandom() {
+  const total = SYMBOLS.reduce((s,x)=>s+x.weight,0);
+  let r = Math.random()*total;
+  for (const s of SYMBOLS) { r -= s.weight; if(r<=0) return s; }
+  return SYMBOLS[SYMBOLS.length-1];
+}
+
+function buildStrip(stripEl) {
+  stripEl.innerHTML = '';
+  const pool = [];
+  for (let i=0;i<24;i++) pool.push(weightedRandom());
+  for (const s of pool) {
+    const d = document.createElement('div');
+    d.className = 'reel-symbol';
+    d.innerHTML = `<span style=\"font-size:32px\">${s.em}</span><span class=\"sym-label\">${s.label}</span>`;
+    d.dataset.id = s.id;
+    stripEl.appendChild(d);
+  }
+}
+
+function initReels() {
+  for (let i=0;i<3;i++) {
+    const strip = document.getElementById('strip'+i);
+    buildStrip(strip);
+    strip.style.transform = 'translateY(0)';
+  }
+  renderPaytable();
+}
+
+function renderPaytable() {
+  const grid = document.getElementById('paytable-grid');
+  grid.innerHTML = '';
+  for (const p of PAYOUTS) {
+    if (p.isPair) {
+      const r = document.createElement('div');
+      r.className = 'pt-row';
+      r.innerHTML = `<span class=\"pt-syms\">Any pair</span><span class=\"pt-payout\">x${p.mult}</span>`;
+      grid.appendChild(r);
+      continue;
+    }
+    const sym = SYMBOLS.find(s=>s.id===p.ids[0]);
+    const r = document.createElement('div');
+    r.className = 'pt-row';
+    r.innerHTML = `<span class=\"pt-syms\">${sym.em}${sym.em}${sym.em}</span><span class=\"pt-payout\">x${p.mult}</span>`;
+    grid.appendChild(r);
+  }
+}
+
+function setMsg(txt, cls='') {
+  const el = document.getElementById('msg-box');
+  el.textContent = txt;
+  el.className = 'msg-box ' + cls;
+}
+
+function updateStats() {
+  document.getElementById('balance').textContent = balance;
+  document.getElementById('winnings').textContent = totalWin;
+}
+
+function getResult(stripEl) {
+  const symbols = stripEl.querySelectorAll('.reel-symbol');
+  const size = 90;
+  const currentY = parseFloat(stripEl.style.transform.replace('translateY(','')) || 0;
+  const idx = Math.round(-currentY / size);
+  const clamped = ((idx % symbols.length) + symbols.length) % symbols.length;
+  return symbols[clamped] ? symbols[clamped].dataset.id : SYMBOLS[0].id;
+}
+
+function spin() {
+  if (spinning) return;
+  if (balance < BET) {
+    setMsg(\"Out of tokens. The model has nothing left to give.\", 'lose');
+    document.getElementById('spin-btn').disabled = true;
+    return;
+  }
+  spinning = true;
+  balance -= BET;
+  updateStats();
+  document.getElementById('spin-btn').disabled = true;
+  setMsg(\"Forwarding through the network...\", '');
+
+  const results = [weightedRandom(), weightedRandom(), weightedRandom()];
+  const durations = [800 + Math.random()*200, 1000 + Math.random()*200, 1200 + Math.random()*200];
+  const SIZE = 90;
+
+  for (let i=0;i<3;i++) {
+    const strip = document.getElementById('strip'+i);
+    buildStrip(strip);
+    const symbols = strip.querySelectorAll('.reel-symbol');
+    const targetIdx = Math.floor(Math.random() * (symbols.length - 5));
+    const targetSymbol = results[i];
+    let placed = false;
+    for (let j=targetIdx; j<symbols.length; j++) {
+      if (symbols[j].dataset.id === targetSymbol.id) {
+        const finalY = -(j * SIZE);
+        animateReel(strip, finalY, durations[i], i, i===2 ? results : null);
+        placed = true;
+        break;
+      }
+    }
+    if (!placed) {
+      symbols[targetIdx].dataset.id = targetSymbol.id;
+      symbols[targetIdx].querySelector('span').textContent = targetSymbol.em;
+      symbols[targetIdx].querySelector('.sym-label').textContent = targetSymbol.label;
+      const finalY = -(targetIdx * SIZE);
+      animateReel(strip, finalY, durations[i], i, i===2 ? results : null);
+    }
+  }
+}
+
+function animateReel(strip, finalY, duration, reelIdx, finalResults) {
+  const SIZE = 90;
+  const totalSymbols = strip.querySelectorAll('.reel-symbol').length;
+  const spinDistance = totalSymbols * SIZE * 1.5;
+  const startY = 0;
+  const startTime = performance.now();
+
+  function easeOut(t) { return 1 - Math.pow(1-t, 3); }
+
+  function frame(now) {
+    const elapsed = now - startTime;
+    const t = Math.min(elapsed / duration, 1);
+    const eased = easeOut(t);
+    const currentY = startY - spinDistance * eased + (startY - finalY + spinDistance) * eased;
+    const actualY = startY + (finalY - startY) * eased - (spinDistance * (1 - eased));
+    strip.style.transform = `translateY(${finalY * eased - spinDistance*(1-t)*t*4}px)`;
+
+    if (t < 1) {
+      animFrames[reelIdx] = requestAnimationFrame(frame);
+    } else {
+      strip.style.transform = `translateY(${finalY}px)`;
+      if (finalResults) {
+        setTimeout(()=>resolveResults(finalResults), 100);
+      }
+    }
+  }
+
+  strip.style.transform = `translateY(${-spinDistance}px)`;
+  animFrames[reelIdx] = requestAnimationFrame(frame);
+}
+
+function resolveResults(results) {
+  const ids = results.map(r=>r.id);
+  let payout = 0;
+  let winMsg = '';
+  let cls = 'lose';
+
+  for (const p of PAYOUTS) {
+    if (p.isPair) continue;
+    if (ids[0]===p.ids[0] && ids[1]===p.ids[1] && ids[2]===p.ids[2]) {
+      payout = BET * p.mult;
+      winMsg = p.label + ` +${payout} tokens!`;
+      cls = p.mult >= 20 ? 'jackpot' : 'win';
+      break;
+    }
+  }
+
+  if (!payout) {
+    const pair = PAYOUTS.find(p=>p.isPair);
+    const counts = {};
+    ids.forEach(id=>counts[id]=(counts[id]||0)+1);
+    const hasPair = Object.values(counts).some(v=>v>=2);
+    if (hasPair) {
+      payout = BET * pair.mult;
+      const sym = SYMBOLS.find(s=>s.id===ids.find(id=>counts[id]>=2));
+      winMsg = `Pair of ${sym ? sym.label : 'symbols'}! +${payout} tokens.`;
+      cls = 'win';
+    }
+  }
+
+  if (payout > 0) {
+    balance += payout;
+    totalWin += payout;
+    setMsg(winMsg, cls);
+  } else {
+    setMsg(LOSE_QUIPS[Math.floor(Math.random()*LOSE_QUIPS.length)], 'lose');
+  }
+
+  updateStats();
+  spinning = false;
+  document.getElementById('spin-btn').disabled = balance < BET;
+  if (balance < BET) {
+    setMsg(\"Fully out of tokens. Please submit a support ticket to Anthropic.\", 'lose');
+  }
+}
+
+initReels();
+</script>
+`
+}

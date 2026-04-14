@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GPT-Slot 4o — Win tokens, burn tokens, hallucinate jackpots.">
   <title>GPT-Slot 4o — AI Token Casino</title>
   <style>
     :root {
@@ -127,18 +128,19 @@
       overflow: hidden;
     }
 
-    /* payline guides */
-    .reels-container::before,
-    .reels-container::after {
+    /* center payline */
+    .reels-container::before {
       content: '';
       position: absolute;
       left: 10px;
       right: 10px;
-      height: 1px;
+      top: 50%;
+      height: 2px;
+      transform: translateY(-50%);
+      background: linear-gradient(90deg, transparent, rgba(0,255,136,0.35) 20%, rgba(0,255,136,0.35) 80%, transparent);
       pointer-events: none;
+      z-index: 1;
     }
-    .reels-container::before { top: calc(50% - 52px); background: rgba(0,255,136,0.18); }
-    .reels-container::after  { top: calc(50% + 52px); background: rgba(0,255,136,0.18); }
 
     .reels {
       display: flex;
@@ -480,7 +482,7 @@
   </div>
 
   <!-- Message -->
-  <div class="message-area">
+  <div class="message-area" aria-live="polite" aria-atomic="true">
     <div class="message" id="message">Pull the lever and donate to the training data fund.</div>
   </div>
 
@@ -507,7 +509,7 @@
       <div class="pt-row"><span class="pt-syms">💰💰💰</span><span class="pt-val">× 10</span></div>
       <div class="pt-row"><span class="pt-syms">⚡⚡⚡</span><span class="pt-val">× 5</span></div>
       <div class="pt-row"><span class="pt-syms">Any ×3</span><span class="pt-val">× 3</span></div>
-      <div class="pt-row"><span class="pt-syms">Any ×2</span><span class="pt-val">× 1</span></div>
+      <div class="pt-row"><span class="pt-syms">Any ×2</span><span class="pt-val">refund</span></div>
     </div>
   </div>
 
@@ -778,7 +780,7 @@
     }
 
     setMessage(msg, msgType);
-    addHistory(results.map(s => s.emoji).join(''), histType);
+    addHistory(results.map(s => s.emoji).join(' '), histType);
 
     // Check if player can't afford next spin
     if (tokens < bet) {
@@ -830,6 +832,10 @@
   buyBtn.addEventListener('click', () => {
     bumpTokens(tokens + 100);
     buyBtn.style.display = 'none';
+    // Re-enable controls after topping up
+    document.getElementById('bet-down').disabled = false;
+    document.getElementById('bet-up').disabled   = false;
+    spinBtn.disabled = false;
     setMessage("Welcome to ChatSlot Plus! 100 tokens added. (VC-funded. Pre-revenue.) 🤑", 'win');
   });
 </script>

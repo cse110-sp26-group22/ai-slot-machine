@@ -1,7 +1,7 @@
 # Candidate 041
 
 - Run ID: candidate-041
-- Timestamp: 04/13/2026 11:18 PM
+- Timestamp: 2026-04-13 11:18 PM
 - Model: claude-sonnet-4-6
 - Input tokens: 12836
 - Output tokens: 1743

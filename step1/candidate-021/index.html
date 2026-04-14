@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Token Singularity - AI Slot Machine</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="machine">
+    <header class="machine-header">
+      <h1>TOKEN SINGULARITY</h1>
+      <p class="subtitle">The world's first AI-powered slot machine<br><em>(powered by 97% electricity, 3% vibes)</em></p>
+    </header>
+
+    <div class="balance-bar">
+      <div class="balance-item">
+        <span class="label">TOKENS</span>
+        <span class="value" id="balance">100</span>
+      </div>
+      <div class="balance-item">
+        <span class="label">BET</span>
+        <div class="bet-controls">
+          <button class="bet-btn" id="bet-down">−</button>
+          <span class="value" id="bet">10</span>
+          <button class="bet-btn" id="bet-up">+</button>
+        </div>
+      </div>
+      <div class="balance-item">
+        <span class="label">NET WIN</span>
+        <span class="value" id="net-win">0</span>
+      </div>
+    </div>
+
+    <div class="reels-frame">
+      <div class="reel-window">
+        <div class="reel-strip" id="reel-0">
+          <div class="reel-inner" id="reel-inner-0"></div>
+        </div>
+        <div class="reel-strip" id="reel-1">
+          <div class="reel-inner" id="reel-inner-1"></div>
+        </div>
+        <div class="reel-strip" id="reel-2">
+          <div class="reel-inner" id="reel-inner-2"></div>
+        </div>
+      </div>
+      <div class="payline"></div>
+    </div>
+
+    <div class="message-board">
+      <p id="message">Insert tokens to begin inference.</p>
+    </div>
+
+    <div class="controls">
+      <button class="spin-btn" id="spin-btn">
+        <span class="spin-label">SPIN</span>
+        <span class="spin-cost" id="spin-cost">(costs <span id="cost-display">10</span> tokens)</span>
+      </button>
+      <button class="reset-btn" id="reset-btn" title="Raise another funding round">Raise Series B</button>
+    </div>
+
+    <div class="paytable">
+      <h3>PAYTABLE</h3>
+      <div class="pay-rows" id="paytable-rows"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

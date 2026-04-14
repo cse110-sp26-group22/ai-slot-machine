@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Token Slots — Bet Your Compute!</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+
+  <main class="container">
+    <header class="header">
+      <h1 class="title">
+        <span class="title-ai">AI</span> Token Slots
+      </h1>
+      <p class="tagline">Spend fake money on fake intelligence</p>
+    </header>
+
+    <!-- Token wallet -->
+    <div class="wallet" role="status" aria-live="polite" aria-label="Token balance">
+      <div class="wallet-icon">🪙</div>
+      <div class="wallet-info">
+        <span class="wallet-label">YOUR TOKENS</span>
+        <span class="wallet-amount" id="token-display">100</span>
+      </div>
+      <div class="wallet-streak" id="streak-display" aria-label="Win streak"></div>
+    </div>
+
+    <!-- Slot machine cabinet -->
+    <div class="machine" role="region" aria-label="Slot machine">
+      <!-- Reels -->
+      <div class="reels-frame">
+        <div class="reels-window" aria-hidden="true">
+          <div class="reel-container" id="reel-0">
+            <div class="reel" id="reel-strip-0"></div>
+          </div>
+          <div class="reel-divider"></div>
+          <div class="reel-container" id="reel-1">
+            <div class="reel" id="reel-strip-1"></div>
+          </div>
+          <div class="reel-divider"></div>
+          <div class="reel-container" id="reel-2">
+            <div class="reel" id="reel-strip-2"></div>
+          </div>
+        </div>
+        <div class="payline" aria-hidden="true"></div>
+      </div>
+
+      <!-- Result message -->
+      <div class="result-area" aria-live="assertive" aria-atomic="true">
+        <p class="result-message" id="result-message">Feed me tokens to begin...</p>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls">
+        <div class="bet-section">
+          <label class="bet-label" for="bet-select">BET</label>
+          <div class="bet-buttons" role="group" aria-label="Bet amount">
+            <button class="bet-btn active" data-bet="5" id="bet-5">5</button>
+            <button class="bet-btn" data-bet="10" id="bet-10">10</button>
+            <button class="bet-btn" data-bet="25" id="bet-25">25</button>
+          </div>
+        </div>
+
+        <button class="spin-btn" id="spin-btn" aria-label="Spin the reels">
+          <span class="spin-icon">⚡</span>
+          <span class="spin-text">SPIN</span>
+        </button>
+
+        <button class="reset-btn" id="reset-btn" aria-label="Reset tokens to 100">
+          <span>🔄</span> REFILL
+        </button>
+      </div>
+    </div>
+
+    <!-- Pay table -->
+    <details class="paytable" id="paytable">
+      <summary class="paytable-toggle">
+        <span>📊 Pay Table & AI Lore</span>
+        <span class="chevron">▼</span>
+      </summary>
+      <div class="paytable-content">
+        <table class="pay-table">
+          <thead>
+            <tr>
+              <th>Combination</th>
+              <th>Payout</th>
+              <th>Message</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="jackpot-row">
+              <td>🪙🪙🪙</td>
+              <td>500× bet</td>
+              <td>"Mined your own tokens!"</td>
+            </tr>
+            <tr>
+              <td>⚡⚡⚡</td>
+              <td>100× bet</td>
+              <td>"GPU cluster unlocked!"</td>
+            </tr>
+            <tr>
+              <td>🧠🧠🧠</td>
+              <td>50× bet</td>
+              <td>"AGI achieved (lol)!"</td>
+            </tr>
+            <tr>
+              <td>🤖🤖🤖</td>
+              <td>25× bet</td>
+              <td>"Robots rising!"</td>
+            </tr>
+            <tr>
+              <td>💾💾💾</td>
+              <td>15× bet</td>
+              <td>"Training data found!"</td>
+            </tr>
+            <tr>
+              <td>🎯🎯🎯</td>
+              <td>10× bet</td>
+              <td>"Hallucinated a win!"</td>
+            </tr>
+            <tr>
+              <td>📎📎📎</td>
+              <td>5× bet</td>
+              <td>"Paperclip maximizer!"</td>
+            </tr>
+            <tr>
+              <td>Any 2 match</td>
+              <td>2× bet</td>
+              <td>"Partial alignment!"</td>
+            </tr>
+            <tr class="lose-row">
+              <td>No match</td>
+              <td>−bet</td>
+              <td>"Misaligned as usual."</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <!-- Stats panel -->
+    <div class="stats-panel" role="region" aria-label="Session statistics">
+      <div class="stat">
+        <span class="stat-label">SPINS</span>
+        <span class="stat-value" id="stat-spins">0</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">WINS</span>
+        <span class="stat-value" id="stat-wins">0</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">BEST WIN</span>
+        <span class="stat-value" id="stat-best">0</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">NET P/L</span>
+        <span class="stat-value" id="stat-net">0</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- Win overlay -->
+  <div class="win-overlay" id="win-overlay" aria-hidden="true" role="dialog" aria-label="Win announcement">
+    <div class="win-content">
+      <div class="win-emoji" id="win-emoji">🎉</div>
+      <div class="win-title" id="win-title">JACKPOT!</div>
+      <div class="win-amount" id="win-amount">+500 tokens</div>
+      <div class="win-quip" id="win-quip">You'll spend it all on API calls anyway.</div>
+      <button class="win-close-btn" id="win-close-btn">COLLECT TOKENS</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

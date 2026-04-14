@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TokenBurn™ — AI Slot Machine</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <canvas id="bg-canvas"></canvas>
+
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <h1 class="logo">TOKEN<span class="logo-burn">BURN</span>™</h1>
+        <p class="tagline">Powered by Stochastic Parrots &amp; Venture Capital</p>
+      </div>
+      <div class="header-right">
+        <button class="sound-btn" id="sound-btn" aria-label="Toggle sound" title="Toggle sound (M)">
+          <span id="sound-icon">🔊</span>
+        </button>
+        <div class="model-chip" id="model-chip">GPT-∞</div>
+      </div>
+    </header>
+
+    <!-- Stats bar -->
+    <div class="stats-bar">
+      <div class="stat-block">
+        <span class="stat-label">Balance</span>
+        <span class="stat-val gold" id="stat-balance">1,000</span>
+        <span class="stat-unit">tokens</span>
+      </div>
+      <div class="stat-block">
+        <span class="stat-label">Burned</span>
+        <span class="stat-val red" id="stat-burned">0</span>
+        <span class="stat-unit">tokens</span>
+      </div>
+      <div class="stat-block">
+        <span class="stat-label">Spins</span>
+        <span class="stat-val" id="stat-spins">0</span>
+      </div>
+      <div class="stat-block">
+        <span class="stat-label">Best Win</span>
+        <span class="stat-val gold" id="stat-best">0</span>
+        <span class="stat-unit">tokens</span>
+      </div>
+    </div>
+
+    <!-- Context window meter -->
+    <div class="ctx-meter-wrap">
+      <span class="ctx-label">Context Window</span>
+      <div class="ctx-bar-track">
+        <div class="ctx-bar-fill" id="ctx-fill"></div>
+        <div class="ctx-bar-label" id="ctx-text">1000 / 1000 tokens</div>
+      </div>
+      <span class="ctx-emoji" id="ctx-emoji">🟢</span>
+    </div>
+
+    <!-- Slot machine -->
+    <main class="machine-wrap">
+      <div class="machine">
+        <!-- Reel windows -->
+        <div class="reels" id="reels">
+          <div class="reel-col" id="reel-0">
+            <div class="reel-viewport">
+              <div class="reel-strip" id="strip-0"></div>
+              <div class="reel-glare"></div>
+            </div>
+          </div>
+          <div class="reel-sep"></div>
+          <div class="reel-col" id="reel-1">
+            <div class="reel-viewport">
+              <div class="reel-strip" id="strip-1"></div>
+              <div class="reel-glare"></div>
+            </div>
+          </div>
+          <div class="reel-sep"></div>
+          <div class="reel-col" id="reel-2">
+            <div class="reel-viewport">
+              <div class="reel-strip" id="strip-2"></div>
+              <div class="reel-glare"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payline marker -->
+        <div class="payline-marker"></div>
+
+        <!-- Status -->
+        <div class="status-area">
+          <p class="status-msg" id="status-msg">Insert tokens to begin hallucinating profits.</p>
+        </div>
+      </div>
+    </main>
+
+    <!-- Controls -->
+    <section class="controls">
+      <div class="bet-row">
+        <span class="bet-heading">Inference Cost</span>
+        <div class="bet-chips" id="bet-chips">
+          <button class="chip" data-bet="5">5</button>
+          <button class="chip active" data-bet="10">10</button>
+          <button class="chip" data-bet="25">25</button>
+          <button class="chip" data-bet="50">50</button>
+          <button class="chip" data-bet="100">100</button>
+        </div>
+        <span class="bet-cur">Bet: <strong id="bet-display">10</strong> tokens</span>
+      </div>
+
+      <div class="action-row">
+        <button class="btn-spin" id="btn-spin">
+          <span class="spin-label">RUN INFERENCE</span>
+          <span class="spin-key">[SPACE]</span>
+        </button>
+        <button class="btn-refill" id="btn-refill">Get VC Funding 💸</button>
+      </div>
+
+      <p class="keyboard-hint">Keyboard: <kbd>Space</kbd> = spin &nbsp;|&nbsp; <kbd>1–5</kbd> = bet &nbsp;|&nbsp; <kbd>M</kbd> = sound</p>
+    </section>
+
+    <!-- Paytable -->
+    <section class="paytable-section">
+      <h2 class="section-title">Payout Schedule <em>(× bet)</em></h2>
+      <div class="paytable-grid" id="paytable-grid"></div>
+    </section>
+
+    <!-- Inference log -->
+    <section class="log-section">
+      <div class="log-header">
+        <h2 class="section-title">Inference Log</h2>
+        <button class="btn-clear-log" id="btn-clear-log">Clear</button>
+      </div>
+      <div class="log-list" id="log-list">
+        <div class="log-item log-info">&gt; System boot. Model weights loaded. Context: 1000 tokens of pure cope.</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Jackpot modal -->
+  <div class="modal-backdrop" id="jackpot-modal" aria-hidden="true">
+    <div class="modal jackpot-modal">
+      <div class="modal-emoji" id="jp-emoji">🎉</div>
+      <h2 class="modal-title" id="jp-title">JACKPOT!</h2>
+      <p class="modal-body" id="jp-body"></p>
+      <button class="btn-modal-ok" id="jp-ok">Collect Tokens</button>
+    </div>
+  </div>
+
+  <!-- Broke modal -->
+  <div class="modal-backdrop" id="broke-modal" aria-hidden="true">
+    <div class="modal broke-modal">
+      <div class="modal-emoji">💸</div>
+      <h2 class="modal-title">Token Limit Exceeded</h2>
+      <p class="modal-body">You have exhausted your entire inference budget. The model regrets to inform you that your prompts have been rate-limited to zero. Would you like to secure Series A funding?</p>
+      <div class="modal-btns">
+        <button class="btn-modal-ok" id="broke-ok">Get VC Funding</button>
+        <button class="btn-modal-cancel" id="broke-cancel">Suffer in Production</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

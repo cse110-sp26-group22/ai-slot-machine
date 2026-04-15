@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Token Casino</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="scanlines"></div>
+
+  <div class="casino">
+    <header>
+      <h1 class="title">🤖 AI TOKEN CASINO 🎰</h1>
+      <p class="subtitle">"Hallucinate your way to riches!"</p>
+    </header>
+
+    <div class="token-bar">
+      <div class="token-display">
+        <span class="token-label">TOKENS</span>
+        <span class="token-count" id="tokenCount">100</span>
+        <span class="token-unit">ctx</span>
+      </div>
+      <div class="bet-control">
+        <button class="bet-btn" id="betDown">−</button>
+        <span class="bet-label">BET</span>
+        <span class="bet-amount" id="betAmount">10</span>
+        <button class="bet-btn" id="betUp">+</button>
+      </div>
+    </div>
+
+    <div class="machine">
+      <div class="machine-top">
+        <div class="light-row">
+          <span class="bulb" id="b0"></span>
+          <span class="bulb" id="b1"></span>
+          <span class="bulb" id="b2"></span>
+          <span class="bulb" id="b3"></span>
+          <span class="bulb" id="b4"></span>
+        </div>
+      </div>
+
+      <div class="reel-window">
+        <div class="reel-container">
+          <div class="reel" id="reel0">
+            <div class="reel-inner" id="inner0"></div>
+          </div>
+          <div class="reel-divider"></div>
+          <div class="reel" id="reel1">
+            <div class="reel-inner" id="inner1"></div>
+          </div>
+          <div class="reel-divider"></div>
+          <div class="reel" id="reel2">
+            <div class="reel-inner" id="inner2"></div>
+          </div>
+        </div>
+        <div class="payline"></div>
+      </div>
+
+      <div class="machine-bottom">
+        <div class="light-row">
+          <span class="bulb" id="b5"></span>
+          <span class="bulb" id="b6"></span>
+          <span class="bulb" id="b7"></span>
+          <span class="bulb" id="b8"></span>
+          <span class="bulb" id="b9"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="message-box">
+      <p class="message" id="message">Insert tokens to begin inference...</p>
+    </div>
+
+    <div class="controls">
+      <button class="spin-btn" id="spinBtn">
+        <span class="spin-text">SPIN</span>
+        <span class="spin-sub">Run Inference</span>
+      </button>
+      <button class="max-btn" id="maxBet">MAX BET</button>
+    </div>
+
+    <div class="paytable">
+      <h3>PAYTABLE</h3>
+      <div class="pay-grid">
+        <div class="pay-row jackpot">
+          <span>🧠🧠🧠</span><span>SUPERINTELLIGENCE — 50× bet</span>
+        </div>
+        <div class="pay-row big">
+          <span>🤖🤖🤖</span><span>ROBOT UPRISING — 20× bet</span>
+        </div>
+        <div class="pay-row big">
+          <span>💀💀💀</span><span>HALLUCINATION — 15× bet</span>
+        </div>
+        <div class="pay-row med">
+          <span>💰💰💰</span><span>VC FUNDING — 10× bet</span>
+        </div>
+        <div class="pay-row med">
+          <span>📉📉📉</span><span>CONTEXT OVERFLOW — 8× bet</span>
+        </div>
+        <div class="pay-row small">
+          <span>Any 3 match</span><span>5× bet</span>
+        </div>
+        <div class="pay-row small">
+          <span>Any 2 match</span><span>1× bet (break even)</span>
+        </div>
+        <div class="pay-row lose">
+          <span>No match</span><span>Tokens burned 🔥</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-bar">
+      <span>SPINS: <b id="spinCount">0</b></span>
+      <span>WON: <b id="wonCount">0</b> ctx</span>
+      <span>LOST: <b id="lostCount">0</b> ctx</span>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

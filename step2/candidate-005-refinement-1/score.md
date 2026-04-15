@@ -1,5 +1,3 @@
-Clock time: 8m 9s
-
 
 \# Candidate 005 Refined
 

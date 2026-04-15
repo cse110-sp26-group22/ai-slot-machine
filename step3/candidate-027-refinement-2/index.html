@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TOKEN SLOTS — AI Edition</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="lights" id="lights"></div>
+      <div class="title-block">
+        <h1>🤖 TOKEN SLOTS</h1>
+        <p class="tagline">Spend tokens to win tokens — just like a real LLM API</p>
+      </div>
+      <div class="lights" id="lights2"></div>
+    </header>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+      <div class="stat">
+        <span class="stat-label">BALANCE</span>
+        <span class="stat-value" id="balance">1000</span>
+        <span class="stat-unit">tkn</span>
+      </div>
+      <div class="stat won">
+        <span class="stat-label">TOKENS WON</span>
+        <span class="stat-value" id="stat-won">0</span>
+        <span class="stat-unit">tkn</span>
+      </div>
+      <div class="stat burned">
+        <span class="stat-label">TOKENS BURNED</span>
+        <span class="stat-value" id="stat-burned">0</span>
+        <span class="stat-unit">tkn</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">SPINS</span>
+        <span class="stat-value" id="stat-spins">0</span>
+        <span class="stat-unit"></span>
+      </div>
+    </div>
+
+    <!-- Progressive Jackpot Meter -->
+    <div class="jackpot-meter" id="jackpot-meter">
+      <span class="jackpot-label">⚠ JACKPOT POOL</span>
+      <span class="jackpot-amount" id="jackpot-amount">5,000</span>
+      <span class="jackpot-unit">tokens</span>
+      <span class="jackpot-hint">Hit 🤖🤖🤖 to claim</span>
+    </div>
+
+    <!-- Slot Machine -->
+    <main class="machine">
+
+      <!-- Reel Window -->
+      <div class="reels-section">
+        <div class="payline-label left">◄ PAY LINE</div>
+        <div class="reels" id="reels">
+          <div class="reel" id="reel-0">
+            <div class="reel-mask">
+              <div class="reel-strip" id="strip-0"></div>
+              <div class="reel-overlay"></div>
+            </div>
+          </div>
+          <div class="reel-sep"></div>
+          <div class="reel" id="reel-1">
+            <div class="reel-mask">
+              <div class="reel-strip" id="strip-1"></div>
+              <div class="reel-overlay"></div>
+            </div>
+          </div>
+          <div class="reel-sep"></div>
+          <div class="reel" id="reel-2">
+            <div class="reel-mask">
+              <div class="reel-strip" id="strip-2"></div>
+              <div class="reel-overlay"></div>
+            </div>
+          </div>
+        </div>
+        <div class="payline-label right">PAY LINE ►</div>
+      </div>
+
+      <!-- Result Display -->
+      <div class="result-display" id="result-display">
+        <span id="result-text">Insert tokens to begin inference...</span>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls">
+        <div class="bet-section">
+          <span class="bet-label">BET AMOUNT (tokens)</span>
+          <div class="bet-buttons">
+            <button class="bet-btn" data-bet="10">10</button>
+            <button class="bet-btn active" data-bet="25">25</button>
+            <button class="bet-btn" data-bet="50">50</button>
+            <button class="bet-btn" data-bet="100">100</button>
+            <button class="bet-btn" data-bet="max">MAX</button>
+          </div>
+          <div class="bet-info">
+            Wagering <strong id="bet-display">25</strong> tkn
+            &nbsp;·&nbsp;
+            Jackpot: <strong id="max-win-display">5,000</strong> tkn
+          </div>
+        </div>
+
+        <button class="spin-btn" id="spin-btn" aria-label="Spin the reels">
+          <span class="spin-main">SPIN</span>
+          <span class="spin-sub">▶ Run Inference</span>
+        </button>
+
+        <div class="shortcuts-hint">
+          <kbd>SPACE</kbd> spin &nbsp;·&nbsp; <kbd>↑↓</kbd> change bet
+        </div>
+      </div>
+    </main>
+
+    <!-- Paytable -->
+    <section class="paytable-section">
+      <h2 class="section-title">PAYTABLE — Token Payouts</h2>
+      <div class="paytable-grid" id="paytable-grid"></div>
+      <div class="paytable-pair">
+        <span>Any matching pair = <strong>0.5× payout returned</strong></span>
+        &nbsp;·&nbsp;
+        <span>5% of every bet grows the jackpot pool</span>
+      </div>
+    </section>
+
+    <!-- History Log -->
+    <section class="history-section">
+      <div class="history-header">
+        <h2 class="section-title">INFERENCE LOG</h2>
+        <button class="clear-btn" id="clear-history-btn">Clear</button>
+      </div>
+      <ul class="history-list" id="history-list">
+        <li class="history-empty">No spins yet. Model is idle.</li>
+      </ul>
+    </section>
+
+  </div><!-- /#app -->
+
+  <!-- Broke Modal -->
+  <div class="modal-overlay" id="modal-broke" hidden>
+    <div class="modal">
+      <div class="modal-icon">💸</div>
+      <h2>OUT OF TOKENS</h2>
+      <p>Your context window is empty.<br>
+      The model has been deprecated.<br>
+      Please upgrade to Enterprise tier.</p>
+      <button class="modal-btn" id="refill-btn">Free Demo Refill (+1000 tkn)</button>
+    </div>
+  </div>
+
+  <!-- Particle Container -->
+  <div id="particles" aria-hidden="true"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -25,5 +25,7 @@ Script 27 initially appeared strong, especially in its starting version:
   - However, **the changes between Step 1 and Step 2 were minimal**
   - This lack of iteration reduced its value for deeper analysis
   
+It is also worth noting that prominently in candidate 5 and in other candiates, there was a visual glitch where the slot would not stop splinning even upon output of a result. This should be amended in the next refinement stage.
+  
 Thus we decided to not proceed with this test.
 

@@ -34,7 +34,7 @@ Candidate 005 was a strong second choice with excellent code architecture (class
 
 ## Refinement Applied
 
-The refinement prompt (saved as `refinement-prompt-step4.txt`) addressed 022's two weaknesses and added three quality-of-life improvements:
+The refinement prompt (saved as `refinement-prompt-step5.txt`) addressed 022's two weaknesses and added three quality-of-life improvements:
 
 1. Fix tab-away crash during spin animation
 2. Add inline code comments for all major sections

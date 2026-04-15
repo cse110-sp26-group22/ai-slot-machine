@@ -26,7 +26,7 @@
 
 \## App Quality Notes
 
-Interface is almost entirely the same. Colors are slightly more vibrant with rainbow border surrounding the spinner element. Spin animation is generally improved with emojis having simulated motion blur instead of shaking. Additional sounds were added during spin animation. Wins have more pronounced visual effects. Mostly tiny improvements acros the board. 
+Interface is almost entirely the same. Colors are slightly more vibrant with rainbow border surrounding the spinner element. Spin animation is generally improved with emojis having simulated motion blur instead of shaking. Additional sounds were added during spin animation. Wins have more pronounced visual effects. Mostly tiny improvements across the board. Win rates seem rather low which may reduce user interest.
 
 \## Code Quality Notes
 

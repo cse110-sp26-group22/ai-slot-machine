@@ -52,8 +52,6 @@
 
 ---
 
-# Code Quality Section
-
 ## 5. Readability & Style (10%)
 **Is the code easy to read and understand?**
 
@@ -67,20 +65,7 @@
 
 ---
 
-## 6. Structure & Organization (10%)
-**Is the code well-architected?**
-
-| Level | Criteria |
-|------|--------|
-| 5 | Modular, clear separation of concerns |
-| 4 | Mostly organized |
-| 3 | Some tightly coupled code |
-| 2 | Poor structure |
-| 1 | Spaghetti code |
-
----
-
-## 7. Maintainability & Scalability (5%)
+## 6. Maintainability & Scalability (5%)
 **How easy is it to extend or modify?**
 
 | Level | Criteria |

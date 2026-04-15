@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Token Slots</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="casino">
+    <header>
+      <h1>🤖 AI TOKEN CASINO 🎰</h1>
+      <p class="tagline">"Hallucinating Jackpots Since 2023"</p>
+    </header>
+
+    <div class="hud">
+      <div class="hud-item">
+        <span class="hud-label">Your Tokens</span>
+        <span class="hud-value" id="balance">100</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">Bet</span>
+        <div class="bet-controls">
+          <button class="btn-sm" id="bet-down">−</button>
+          <span class="hud-value" id="bet">5</span>
+          <button class="btn-sm" id="bet-up">+</button>
+        </div>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">Total Won</span>
+        <span class="hud-value" id="total-won">0</span>
+      </div>
+    </div>
+
+    <div class="machine">
+      <div class="screen-bezel">
+        <div class="reels" id="reels">
+          <div class="reel-wrap">
+            <div class="reel" id="reel-0">
+              <div class="reel-strip" id="strip-0"></div>
+            </div>
+          </div>
+          <div class="reel-wrap">
+            <div class="reel" id="reel-1">
+              <div class="reel-strip" id="strip-1"></div>
+            </div>
+          </div>
+          <div class="reel-wrap">
+            <div class="reel" id="reel-2">
+              <div class="reel-strip" id="strip-2"></div>
+            </div>
+          </div>
+        </div>
+        <div class="payline"></div>
+      </div>
+
+      <div class="result-box" id="result-box">
+        <span id="result-msg">Insert tokens to play</span>
+      </div>
+
+      <button class="spin-btn" id="spin-btn">
+        <span id="spin-label">SPIN (−<span id="bet-label">5</span> tokens)</span>
+      </button>
+    </div>
+
+    <div class="paytable">
+      <h2>Pay Table</h2>
+      <table>
+        <thead><tr><th>Combo</th><th>Name</th><th>Payout</th></tr></thead>
+        <tbody id="paytable-body"></tbody>
+      </table>
+    </div>
+
+    <div class="ticker" id="ticker">
+      <span id="ticker-text">🤖 Loading context window… please wait… still waiting…</span>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="modal">
+    <div class="modal-box">
+      <h2 id="modal-title">JACKPOT!</h2>
+      <p id="modal-body"></p>
+      <button id="modal-close">Continue Spending Tokens</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

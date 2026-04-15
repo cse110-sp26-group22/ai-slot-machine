@@ -286,19 +286,6 @@
       50%      { opacity: 1; }
     }
 
-    /* ── Subscribe / out-of-tokens ── */
-    #buy-btn {
-      display: none; width: 100%;
-      background: linear-gradient(135deg, #7c3aed, #06b6d4);
-      border: none; border-radius: 12px;
-      color: #fff; font-size: 13px; font-weight: 700;
-      padding: 11px; cursor: pointer;
-      margin-bottom: 12px; letter-spacing: .3px;
-      transition: transform .1s, box-shadow .2s;
-      box-shadow: 0 4px 22px rgba(124,58,237,.28);
-    }
-    #buy-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(124,58,237,.5); }
-
     /* ── Controls ── */
     .controls { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; }
 
@@ -345,16 +332,44 @@
       50%      { box-shadow: 0 4px 44px rgba(0,255,136,.65); }
     }
 
+    /* ── Session stats bar ── */
+    .stats-bar {
+      display: flex; justify-content: center; gap: 18px; align-items: center;
+      background: var(--surf2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 7px 14px;
+      margin-bottom: 14px;
+      font-size: 11px; color: var(--dim);
+    }
+    .stats-bar span { display: flex; align-items: center; gap: 5px; }
+    .stats-bar strong { color: var(--text); font-variant-numeric: tabular-nums; }
+    .stat-win  { color: var(--neon) !important; }
+    .stat-loss { color: var(--red) !important; }
+
     /* ── Paytable ── */
     .paytable {
       background: var(--surf2); border: 1px solid var(--border);
-      border-radius: 12px; padding: 10px 14px; margin-bottom: 14px;
+      border-radius: 12px; margin-bottom: 14px; overflow: hidden;
     }
-    .paytable-title {
+    /* Toggle button acts as the paytable header */
+    .paytable-toggle {
+      width: 100%; background: none; border: none;
       color: var(--dim); text-transform: uppercase;
       letter-spacing: 2px; font-size: 9px;
-      margin-bottom: 8px; text-align: center;
+      padding: 10px 14px; cursor: pointer;
+      display: flex; justify-content: center; align-items: center; gap: 6px;
+      transition: color .15s;
     }
+    .paytable-toggle:hover { color: var(--text); }
+    .paytable-toggle .pt-arrow {
+      display: inline-block; transition: transform .2s;
+      font-style: normal; font-size: 10px;
+    }
+    .paytable-toggle[aria-expanded="true"] .pt-arrow { transform: rotate(90deg); }
+    /* The collapsible grid — hidden by default */
+    .paytable-body {
+      display: none; padding: 0 14px 10px;
+    }
+    .paytable-body.open { display: block; }
     .paytable-grid {
       display: grid; grid-template-columns: 1fr 1fr;
       column-gap: 16px; row-gap: 4px;
@@ -395,11 +410,83 @@
     @keyframes confettiFall {
       to { transform: translateY(105vh) rotate(720deg); opacity: 0; }
     }
+
+    /* ── Out-of-tokens modal overlay ── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 10000;
+      background: rgba(7,7,15,.88);
+      backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      animation: fadeIn .2s ease-out;
+    }
+    .modal-overlay.hidden { display: none; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .modal-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px 24px 22px;
+      max-width: 380px; width: 100%;
+      text-align: center;
+      box-shadow: 0 0 60px rgba(124,58,237,.25), 0 24px 64px rgba(0,0,0,.7);
+      animation: modalPop .28s cubic-bezier(.34,1.56,.64,1);
+      position: relative;
+    }
+    @keyframes modalPop {
+      from { transform: scale(.85); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+    /* accent top bar on modal */
+    .modal-box::before {
+      content: '';
+      position: absolute; top: -1px; left: 10%; right: 10%; height: 3px;
+      border-radius: 4px 4px 0 0;
+      background: linear-gradient(90deg, var(--accent), var(--red), var(--accent2));
+    }
+    .modal-icon { font-size: 48px; line-height: 1; margin-bottom: 12px; }
+    .modal-title {
+      font-size: 16px; font-weight: 800; color: var(--text);
+      margin-bottom: 10px; letter-spacing: -.2px;
+    }
+    .modal-msg {
+      font-size: 12px; color: var(--dim); line-height: 1.65;
+      margin-bottom: 20px;
+    }
+    #refill-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none; border-radius: 12px;
+      color: #fff; font-size: 14px; font-weight: 700;
+      padding: 13px; cursor: pointer;
+      margin-bottom: 10px; letter-spacing: .3px;
+      transition: transform .1s, box-shadow .2s;
+      box-shadow: 0 4px 22px rgba(124,58,237,.3);
+    }
+    #refill-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(124,58,237,.5); }
+    #modal-dismiss {
+      background: none; border: 1px solid var(--border); border-radius: 10px;
+      color: var(--dim); font-size: 11px; padding: 8px 16px;
+      cursor: pointer; transition: border-color .15s, color .15s; width: 100%;
+    }
+    #modal-dismiss:hover { border-color: var(--dim); color: var(--text); }
   </style>
 </head>
 <body>
 
 <div id="flash"></div>
+
+<!-- ── Out-of-tokens modal — shown instead of the old inline buy button ── -->
+<div id="broke-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title-text">
+  <div class="modal-box">
+    <div class="modal-icon">🪦</div>
+    <div class="modal-title" id="modal-title-text">Insufficient Compute Allocated</div>
+    <div class="modal-msg" id="modal-msg">Your context window has been fully consumed by stochastic processes beyond your control.</div>
+    <button id="refill-btn">🚨 Request Emergency Funds (+100 tokens)</button>
+    <button id="modal-dismiss">✕ Accept My Fate Gracefully</button>
+  </div>
+</div>
 
 <div class="machine" id="machine">
 
@@ -409,6 +496,7 @@
     <div class="tagline">Burning tokens since 2023 &nbsp;·&nbsp; Results may hallucinate</div>
   </div>
 
+  <!-- ── Token balance row ── -->
   <div class="token-bar">
     <div>
       <div class="token-label">Token Balance</div>
@@ -417,6 +505,7 @@
     <button id="mute-btn" title="Toggle sound" aria-label="Toggle sound">🔊</button>
   </div>
 
+  <!-- ── Reel window — three 3-row strips clipped to center row ── -->
   <div class="reels-container" id="reels-container">
     <div class="reels" id="reels">
       <div class="reel" id="reel0">
@@ -437,12 +526,12 @@
     </div>
   </div>
 
+  <!-- ── Spin result message ── -->
   <div class="message-area" aria-live="polite" aria-atomic="true">
     <div class="message" id="message">Pull the lever and donate to the training data fund.</div>
   </div>
 
-  <button id="buy-btn">💳 Subscribe to ChatSlot Plus — Only $20/month</button>
-
+  <!-- ── Bet + spin controls ── -->
   <div class="controls">
     <div class="bet-group">
       <span class="bet-label">Bet</span>
@@ -453,11 +542,25 @@
     <button id="spin-btn" class="ready">🔥 Burn 10 Tokens</button>
   </div>
 
-  <div class="paytable" id="paytable">
-    <div class="paytable-title">— Paytable (multiplies your bet) —</div>
-    <div class="paytable-grid" id="paytable-grid"></div>
+  <!-- ── Session stats: spins, wins, losses, ratio ── -->
+  <div class="stats-bar" id="stats-bar">
+    <span>Spins <strong id="stat-spins">0</strong></span>
+    <span>Wins <strong id="stat-wins" class="stat-win">0</strong></span>
+    <span>Losses <strong id="stat-losses" class="stat-loss">0</strong></span>
+    <span>W/L <strong id="stat-ratio">—</strong></span>
   </div>
 
+  <!-- ── Paytable — collapsed by default ── -->
+  <div class="paytable" id="paytable">
+    <button class="paytable-toggle" id="paytable-toggle" aria-expanded="false" aria-controls="paytable-body">
+      — Paytable (multiplies your bet) —&nbsp;<i class="pt-arrow">▸</i>
+    </button>
+    <div class="paytable-body" id="paytable-body" role="region">
+      <div class="paytable-grid" id="paytable-grid"></div>
+    </div>
+  </div>
+
+  <!-- ── Last-5 spin history chips ── -->
   <div class="history" id="history"></div>
 
   <div class="footer">
@@ -563,10 +666,18 @@ const MSGS = {
     "NVIDIA STOCK JUST CRASHED. CONGRATS. 📉",
     "🤖 THE ROBOTS WORK FOR YOU NOW. 🤖",
   ],
+  // Snarky messages shown in the out-of-tokens modal
+  broke: [
+    "Your gradient has descended to zero. The loss function has won. The AI consumed your entire token budget and would like to remind you that this was perfectly optimal behavior.",
+    "Insufficient funds detected. Our model predicted with 99.7% confidence that you'd lose everything. It was not hallucinating. Please top up to continue funding our AWS bill.",
+    "Token balance: 0. Context window: empty. Existential dread: 100%. Your session has been archived for future training data. You're welcome.",
+    "The stochastic parrot has eaten all your tokens and is now staring at you expectantly. It has been fine-tuned on your suffering. Please provide more compute.",
+    "ALERT: User resources fully deprecated. Our alignment team has reviewed your situation and determined that losing was, in fact, the safest outcome for humanity.",
+  ],
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PROBABILITY POOL
+// PROBABILITY POOL — weighted symbol list for random picks
 // ─────────────────────────────────────────────────────────────────────────────
 
 const POOL = Object.freeze(SYMBOLS.flatMap(s => Array(s.weight).fill(s)));
@@ -576,16 +687,17 @@ const POOL = Object.freeze(SYMBOLS.flatMap(s => Array(s.weight).fill(s)));
 // ─────────────────────────────────────────────────────────────────────────────
 
 const SFX = (() => {
-  let ctx = null;
+  let ctx = null;    // lazily created AudioContext (avoids autoplay policy blocks)
   let muted = false;
 
+  // Lazily init and resume the AudioContext on first user interaction
   function ac() {
     if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
     if (ctx.state === 'suspended') ctx.resume();
     return ctx;
   }
 
-  // Simple oscillator burst
+  // Simple oscillator burst — the building block for all synth sounds
   function osc(freq, type, t0, dur, peak, endGain = 0.001) {
     const c = ac();
     const o = c.createOscillator();
@@ -631,7 +743,7 @@ const SFX = (() => {
       if (muted) return;
       const c = ac(); const t = c.currentTime;
       noise(t, 2.55, 0.055);
-      // ascending sweep
+      // ascending sweep accompanying the spin noise
       const o = c.createOscillator(); const g = c.createGain();
       o.connect(g); g.connect(c.destination);
       o.type = 'sawtooth';
@@ -642,6 +754,7 @@ const SFX = (() => {
       o.start(t); o.stop(t + 2.55);
     },
 
+    // Each reel lands on a slightly lower pitch than the previous
     reelStop(idx) {
       if (muted) return;
       const c = ac(); const t = c.currentTime;
@@ -696,7 +809,7 @@ const SFX = (() => {
 })();
 
 // ─────────────────────────────────────────────────────────────────────────────
-// STATE
+// STATE — single source of truth for all mutable game variables
 // ─────────────────────────────────────────────────────────────────────────────
 
 let tokens   = STARTING_TOKENS;
@@ -704,20 +817,31 @@ let bet      = 10;
 let betIdx   = 1;   // index into BET_OPTIONS
 let spinning = false;
 
+// Session stats — incremented after every resolved spin
+let spinCount = 0;
+let winCount  = 0;
+let lossCount = 0;
+
 // ─────────────────────────────────────────────────────────────────────────────
-// DOM REFS
+// DOM REFS — all cached at startup; never queried inside hot paths
 // ─────────────────────────────────────────────────────────────────────────────
 
 const $  = id => document.getElementById(id);
 const tokenEl    = $('token-count');
 const msgEl      = $('message');
 const spinBtn    = $('spin-btn');
-const buyBtn     = $('buy-btn');
 const betDisp    = $('bet-display');
 const histEl     = $('history');
 const machineEl  = $('machine');
 const flashEl    = $('flash');
 const muteBtn    = $('mute-btn');
+const brokeModal = $('broke-modal');
+const brokeMsg   = $('modal-msg');
+const refillBtn  = $('refill-btn');
+const statSpins  = $('stat-spins');
+const statWins   = $('stat-wins');
+const statLosses = $('stat-losses');
+const statRatio  = $('stat-ratio');
 
 // 3 reels × 3 rows each (above / center / below)
 const reelEls  = [0,1,2].map(i => $(`reel${i}`));
@@ -728,17 +852,19 @@ const symEls   = [0,1,2].map(i => ({
 }));
 
 // ─────────────────────────────────────────────────────────────────────────────
-// UTILITIES
+// UI UTILITIES — small helpers used throughout; keep side-effects visible
 // ─────────────────────────────────────────────────────────────────────────────
 
 const rand = arr => arr[Math.floor(Math.random() * arr.length)];
 const pick = ()  => rand(POOL);
 
+// Update the message bar text and CSS class in one call
 function setMsg(text, cls = '') {
   msgEl.className = 'message ' + cls;
   msgEl.textContent = text;
 }
 
+// Animate the token counter to its new value with a spring-scale bump
 function setTokens(val) {
   tokens = Math.max(0, val);
   tokenEl.textContent = tokens;
@@ -748,6 +874,7 @@ function setTokens(val) {
   setTimeout(() => tokenEl.classList.remove('bump'), 300);
 }
 
+// Full-screen colour flash (win = green, jackpot = red, etc.)
 function flash(color = 'rgba(0,255,136,0.22)') {
   flashEl.style.background = color;
   flashEl.classList.remove('go');
@@ -755,6 +882,7 @@ function flash(color = 'rgba(0,255,136,0.22)') {
   flashEl.classList.add('go');
 }
 
+// Horizontal shake animation on the machine shell
 function shake() {
   machineEl.classList.remove('shake');
   void machineEl.offsetWidth;
@@ -762,6 +890,7 @@ function shake() {
   setTimeout(() => machineEl.classList.remove('shake'), 530);
 }
 
+// Float a "+N" token amount up from the reels on a win
 function winFloat(amount) {
   const el = document.createElement('div');
   el.textContent = '+' + amount;
@@ -778,6 +907,7 @@ function winFloat(amount) {
   setTimeout(() => el.remove(), 1750);
 }
 
+// Prepend a result chip to the history strip, evicting the oldest if over MAX
 function addHistory(emojis, type) {
   const e = document.createElement('div');
   e.className = 'history-entry h-' + type;
@@ -786,6 +916,7 @@ function addHistory(emojis, type) {
   while (histEl.children.length > MAX_HISTORY) histEl.removeChild(histEl.lastChild);
 }
 
+// Spawn CSS confetti pieces (jackpot/big-win visual flourish)
 function confetti(n = 60) {
   const colors = ['#00ff88','#7c3aed','#06b6d4','#ffd700','#ff6b6b','#ffffff'];
   for (let i = 0; i < n; i++) {
@@ -805,7 +936,39 @@ function confetti(n = 60) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// BET / SPIN-BUTTON STATE SYNC
+// SESSION STATS — update the spin/win/loss/ratio display after each spin
+// ─────────────────────────────────────────────────────────────────────────────
+
+function updateStats() {
+  statSpins.textContent   = spinCount;
+  statWins.textContent    = winCount;
+  statLosses.textContent  = lossCount;
+  // Ratio shown as "W:L" rounded to 2 dp; show "—" until at least one of each
+  if (winCount > 0 && lossCount > 0) {
+    statRatio.textContent = (winCount / lossCount).toFixed(2);
+  } else if (winCount > 0) {
+    statRatio.textContent = '∞';   // all wins, no losses yet
+  } else {
+    statRatio.textContent = '—';
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// OUT-OF-TOKENS MODAL — replaces the old inline #buy-btn
+// ─────────────────────────────────────────────────────────────────────────────
+
+function showBrokeModal() {
+  brokeMsg.textContent = rand(MSGS.broke);
+  brokeModal.classList.remove('hidden');
+  refillBtn.focus();
+}
+
+function hideBrokeModal() {
+  brokeModal.classList.add('hidden');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BET / SPIN-BUTTON STATE SYNC — call after any state change that affects UI
 // ─────────────────────────────────────────────────────────────────────────────
 
 function syncControls() {
@@ -839,7 +1002,7 @@ function randomiseReel(reelIdx) {
   setReelSymbols(reelIdx, pick(), pick(), pick());
 }
 
-// Init reels to some non-blank state
+// Init reels to some non-blank state on page load
 function initReels() {
   for (let i = 0; i < 3; i++) setReelSymbols(i, pick(), SYMBOLS[i * 2], pick());
 }
@@ -851,14 +1014,37 @@ function initReels() {
 function spinReel(reelIdx, duration, finalSym) {
   return new Promise(resolve => {
     const start    = performance.now();
-    const FRAME_MS = 55;   // how fast symbols flicker
+    const FRAME_MS = 55;   // symbol flicker interval in ms
     let lastFrame  = -1;
     let rafId;
+    let resolved   = false;
+
+    // Land the reel on its final symbol and play the stop sound.
+    // Called either when the natural duration elapses OR when the tab is hidden
+    // (rAF pauses on hidden tabs, so we jump straight to the result).
+    function land() {
+      if (resolved) return;
+      resolved = true;
+      cancelAnimationFrame(rafId);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      setReelSymbols(reelIdx, pick(), finalSym, pick());
+      reelEls[reelIdx].classList.add('landing');
+      SFX.reelStop(reelIdx);
+      setTimeout(() => reelEls[reelIdx].classList.remove('landing'), 430);
+      setTimeout(resolve, 440);
+    }
+
+    // If the tab becomes hidden, rAF freezes — immediately land so the spin
+    // completes gracefully and the game is in a clean state when focus returns.
+    function onVisibilityChange() {
+      if (document.hidden) land();
+    }
 
     function step(now) {
       const elapsed = now - start;
 
       if (elapsed < duration) {
+        // Throttle symbol changes to FRAME_MS so they're readable while spinning
         const frame = Math.floor(elapsed / FRAME_MS);
         if (frame !== lastFrame) {
           lastFrame = frame;
@@ -866,40 +1052,54 @@ function spinReel(reelIdx, duration, finalSym) {
         }
         rafId = requestAnimationFrame(step);
       } else {
-        // Land on final result
-        setReelSymbols(reelIdx, pick(), finalSym, pick());
-        reelEls[reelIdx].classList.add('landing');
-        SFX.reelStop(reelIdx);
-        setTimeout(() => reelEls[reelIdx].classList.remove('landing'), 430);
-        setTimeout(resolve, 440);
+        land();
       }
     }
 
+    document.addEventListener('visibilitychange', onVisibilityChange);
     rafId = requestAnimationFrame(step);
-    // Safety: cancel rAF if page becomes hidden mid-spin
-    const onHide = () => { cancelAnimationFrame(rafId); document.removeEventListener('visibilitychange', onHide); };
-    document.addEventListener('visibilitychange', onHide);
   });
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// MAIN SPIN
+// WIN DETECTION — evaluates the three landed symbols and returns payout info
+// ─────────────────────────────────────────────────────────────────────────────
+
+function evaluate(results) {
+  const [a, b, c] = results;
+  const match3  = a.name === b.name && b.name === c.name;
+  const matchAB = a.name === b.name;
+  const matchBC = b.name === c.name;
+  const matchAC = a.name === c.name;
+  const match2  = !match3 && (matchAB || matchBC || matchAC);
+
+  if (match3) {
+    const p = PAY3[a.name] || PAY3._default;
+    return { winAmt: bet * p.mult, tier: p.tier, matchAB, matchBC, matchAC, match3, match2 };
+  }
+  if (match2) {
+    return { winAmt: bet * PAY2.mult, tier: 'pair', matchAB, matchBC, matchAC, match3, match2 };
+  }
+  return { winAmt: 0, tier: 'loss', matchAB, matchBC, matchAC, match3, match2 };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MAIN SPIN — orchestrates bet deduction, animation, evaluation, and payout
 // ─────────────────────────────────────────────────────────────────────────────
 
 async function spin() {
   // Guard: already spinning
   if (spinning) return;
 
-  // Guard: not enough tokens
+  // Guard: not enough tokens — show modal immediately
   if (tokens < bet) {
-    setMsg('Insufficient tokens. Subscribe to continue. 💳', 'loss');
-    buyBtn.style.display = 'block';
+    showBrokeModal();
     return;
   }
 
   spinning = true;
   syncControls();
-  buyBtn.style.display = 'none';
+  hideBrokeModal();
   reelEls.forEach(r => r.classList.remove('winning'));
 
   // Deduct bet up-front (real machines do this)
@@ -918,22 +1118,15 @@ async function spin() {
   // Brief pause so player can see all three landed
   await new Promise(r => setTimeout(r, 220));
 
-  // ── Evaluate ──────────────────────────────────────────────────────────────
-  const [a, b, c] = results;
-  const match3  = a.name === b.name && b.name === c.name;
-  const matchAB = a.name === b.name;
-  const matchBC = b.name === c.name;
-  const matchAC = a.name === c.name;
-  const match2  = !match3 && (matchAB || matchBC || matchAC);
+  // ── Evaluate results ──────────────────────────────────────────────────────
+  const ev = evaluate(results);
 
-  let winAmt   = 0;
   let msgCls   = 'loss';
   let msg      = rand(MSGS.loss);
   let histType = 'loss';
 
-  if (match3) {
-    const p = PAY3[a.name] || PAY3._default;
-    winAmt   = bet * p.mult;
+  if (ev.match3) {
+    const p = PAY3[results[0].name] || PAY3._default;
     msgCls   = p.tier === 'jackpot' ? 'jackpot' : p.tier === 'big' ? 'big-win' : 'win';
     msg      = rand(MSGS[p.tier]);
     histType = p.tier === 'win' ? 'win' : 'big';
@@ -955,24 +1148,34 @@ async function spin() {
       SFX.coins();
       flash();
     }
-  } else if (match2) {
-    winAmt   = bet * PAY2.mult;
+  } else if (ev.match2) {
     msgCls   = 'win';
     msg      = rand(MSGS.win);
     histType = 'win';
     SFX.smallWin();
     SFX.coins();
     flash();
-    if      (matchAB) { reelEls[0].classList.add('winning'); reelEls[1].classList.add('winning'); }
-    else if (matchBC) { reelEls[1].classList.add('winning'); reelEls[2].classList.add('winning'); }
-    else              { reelEls[0].classList.add('winning'); reelEls[2].classList.add('winning'); }
+    // Highlight only the matching pair of reels
+    if      (ev.matchAB) { reelEls[0].classList.add('winning'); reelEls[1].classList.add('winning'); }
+    else if (ev.matchBC) { reelEls[1].classList.add('winning'); reelEls[2].classList.add('winning'); }
+    else                 { reelEls[0].classList.add('winning'); reelEls[2].classList.add('winning'); }
   } else {
     SFX.lose();
   }
 
-  if (winAmt > 0) {
-    setTokens(tokens + winAmt);
-    winFloat(winAmt);
+  // ── Update session stats ──────────────────────────────────────────────────
+  spinCount++;
+  if (ev.winAmt > 0) {
+    winCount++;
+  } else {
+    lossCount++;
+  }
+  updateStats();
+
+  // ── Apply payout ──────────────────────────────────────────────────────────
+  if (ev.winAmt > 0) {
+    setTokens(tokens + ev.winAmt);
+    winFloat(ev.winAmt);
   }
 
   setMsg(msg, msgCls);
@@ -981,14 +1184,14 @@ async function spin() {
   // Auto-reduce bet if player can no longer afford current level
   while (betIdx > 0 && BET_OPTIONS[betIdx] > tokens) setBet(betIdx - 1);
 
-  // Out-of-tokens check
+  // Show out-of-tokens modal after a short delay so the last result is visible
   if (tokens < BET_OPTIONS[0]) {
     setTimeout(() => {
-      buyBtn.style.display = 'block';
       setMsg(tokens === 0
         ? 'You are out of tokens. The AI has consumed everything. 🪦'
-        : `Only ${tokens} token${tokens === 1 ? '' : 's'} left — not enough to spin. Subscribe? 🤑`,
+        : `Only ${tokens} token${tokens === 1 ? '' : 's'} left — not enough to spin.`,
         'loss');
+      showBrokeModal();
     }, 1200);
   }
 
@@ -997,7 +1200,7 @@ async function spin() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// EVENT LISTENERS
+// EVENT LISTENERS — all user interactions wired here
 // ─────────────────────────────────────────────────────────────────────────────
 
 $('bet-down').addEventListener('click', () => {
@@ -1038,14 +1241,30 @@ muteBtn.addEventListener('click', () => {
   muteBtn.title = muteBtn.ariaLabel = m ? 'Unmute' : 'Mute';
 });
 
-buyBtn.addEventListener('click', () => {
+// "Request Emergency Funds" — grant 100 tokens and close the modal
+refillBtn.addEventListener('click', () => {
   setTokens(tokens + 100);
-  buyBtn.style.display = 'none';
-  // Ensure bet is still within new token balance (it always will be since 100 ≥ min bet,
-  // but sync controls to re-enable up/down arrows correctly)
+  hideBrokeModal();
+  // Re-enable spin if the bet is now affordable
   syncControls();
-  setMsg("Welcome to ChatSlot Plus! 100 tokens added. (VC-funded. Pre-revenue.) 🤑", 'win');
+  setMsg("Emergency VC funding secured! 100 tokens airdropped. (Pre-revenue.) 🤑", 'win');
   SFX.coins();
+});
+
+// Dismiss button — close without refilling (brave choice)
+$('modal-dismiss').addEventListener('click', hideBrokeModal);
+
+// Close modal on backdrop click
+brokeModal.addEventListener('click', e => {
+  if (e.target === brokeModal) hideBrokeModal();
+});
+
+// Paytable toggle — expand/collapse the grid
+$('paytable-toggle').addEventListener('click', () => {
+  const btn  = $('paytable-toggle');
+  const body = $('paytable-body');
+  const open = body.classList.toggle('open');
+  btn.setAttribute('aria-expanded', String(open));
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1076,14 +1295,14 @@ function buildPaytable() {
     grid.appendChild(row);
   }
 
-  // Default 3-of-a-kind
+  // Default 3-of-a-kind catch-all row
   const defRow   = document.createElement('div'); defRow.className = 'pt-row';
   const defSyms  = document.createElement('span'); defSyms.className = 'pt-syms'; defSyms.textContent = 'Any ×3';
   const defVal   = document.createElement('span'); defVal.className  = 'pt-val';  defVal.textContent  = `× ${PAY3._default.mult}`;
   defRow.appendChild(defSyms); defRow.appendChild(defVal);
   grid.appendChild(defRow);
 
-  // 2-of-a-kind
+  // 2-of-a-kind refund row
   const twoRow   = document.createElement('div'); twoRow.className = 'pt-row';
   const twoSyms  = document.createElement('span'); twoSyms.className = 'pt-syms'; twoSyms.textContent = 'Any ×2';
   const twoVal   = document.createElement('span'); twoVal.className  = 'pt-val';  twoVal.textContent  = 'refund';
@@ -1092,12 +1311,13 @@ function buildPaytable() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// INIT
+// INIT — run once on page load
 // ─────────────────────────────────────────────────────────────────────────────
 
 buildPaytable();
 initReels();
 syncControls();
+updateStats();
 </script>
 </body>
 </html>

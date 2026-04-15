@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Slots — The AI Casino</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="ticker-tape">
+        <div class="ticker-inner">
+            <span class="ticker-text">🤖 TOKEN SLOTS: WHERE AI GOES BROKE &nbsp;•&nbsp; POWERED BY HALLUCINATED RNG &nbsp;•&nbsp; FINE-TUNED ON LOSING &nbsp;•&nbsp; NO GPUS WERE HARMED (THEY WERE ALREADY MELTING) &nbsp;•&nbsp; WARNING: GAMBLING MAY CAUSE EMERGENT BEHAVIOR &nbsp;•&nbsp; YOUR INFERENCE COSTS ARE NOT COVERED BY WINNINGS &nbsp;•&nbsp; ALIGNMENT RESEARCHERS HATE THIS ONE SLOT MACHINE &nbsp;•&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span class="ticker-text">🤖 TOKEN SLOTS: WHERE AI GOES BROKE &nbsp;•&nbsp; POWERED BY HALLUCINATED RNG &nbsp;•&nbsp; FINE-TUNED ON LOSING &nbsp;•&nbsp; NO GPUS WERE HARMED (THEY WERE ALREADY MELTING) &nbsp;•&nbsp; WARNING: GAMBLING MAY CAUSE EMERGENT BEHAVIOR &nbsp;•&nbsp; YOUR INFERENCE COSTS ARE NOT COVERED BY WINNINGS &nbsp;•&nbsp; ALIGNMENT RESEARCHERS HATE THIS ONE SLOT MACHINE &nbsp;•&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        </div>
+    </div>
+
+    <main class="app">
+
+        <header class="app-header">
+            <div class="title-glow">🎰 TOKEN SLOTS 🎰</div>
+            <p class="tagline">Burn tokens faster than a 1M-context request</p>
+        </header>
+
+        <div class="balance-card">
+            <span class="balance-label">⚡ TOKEN BALANCE</span>
+            <span class="balance-amount" id="balance">1000</span>
+            <span class="balance-unit">TKN</span>
+        </div>
+
+        <div class="machine-frame">
+            <div class="machine-header">◈ CONTEXT CASINO ◈</div>
+
+            <div class="reels-area">
+                <div class="win-bar win-bar-top"></div>
+                <div class="win-bar win-bar-bot"></div>
+
+                <div class="reels" id="reels">
+                    <div class="reel" id="reel-0">
+                        <div class="cell cell-top" data-pos="top"></div>
+                        <div class="cell cell-mid" data-pos="mid"></div>
+                        <div class="cell cell-bot" data-pos="bot"></div>
+                    </div>
+                    <div class="reel-divider"></div>
+                    <div class="reel" id="reel-1">
+                        <div class="cell cell-top" data-pos="top"></div>
+                        <div class="cell cell-mid" data-pos="mid"></div>
+                        <div class="cell cell-bot" data-pos="bot"></div>
+                    </div>
+                    <div class="reel-divider"></div>
+                    <div class="reel" id="reel-2">
+                        <div class="cell cell-top" data-pos="top"></div>
+                        <div class="cell cell-mid" data-pos="mid"></div>
+                        <div class="cell cell-bot" data-pos="bot"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="message-box" id="message-box">
+            <span id="message">Insert tokens to begin training...</span>
+        </div>
+
+        <div class="controls">
+            <div class="bet-group">
+                <button class="btn btn-sm" id="bet-down" aria-label="Decrease bet">−</button>
+                <div class="bet-info">
+                    <span class="bet-label">BET</span>
+                    <span class="bet-value" id="bet-value">10</span>
+                    <span class="bet-unit">TKN</span>
+                </div>
+                <button class="btn btn-sm" id="bet-up" aria-label="Increase bet">+</button>
+            </div>
+
+            <button class="btn btn-spin" id="spin-btn">
+                <span class="spin-label">SPIN</span>
+                <span class="spin-cost" id="spin-cost">−10 TKN</span>
+            </button>
+
+            <button class="btn btn-max" id="max-bet-btn">MAX<br>BET</button>
+        </div>
+
+        <div class="paytable">
+            <div class="paytable-title">📊 PAYTABLE — 3 OF A KIND</div>
+            <div class="paytable-grid" id="paytable-grid"></div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat">
+                <span class="stat-val" id="stat-spins">0</span>
+                <span class="stat-lbl">Spins</span>
+            </div>
+            <div class="stat">
+                <span class="stat-val" id="stat-wins">0</span>
+                <span class="stat-lbl">Wins</span>
+            </div>
+            <div class="stat">
+                <span class="stat-val" id="stat-best">0</span>
+                <span class="stat-lbl">Best Win</span>
+            </div>
+            <div class="stat">
+                <span class="stat-val" id="stat-burned">0</span>
+                <span class="stat-lbl">Tokens Burned</span>
+            </div>
+        </div>
+
+        <p class="footer-note">Space bar to spin &nbsp;|&nbsp; All odds are hallucinated &nbsp;|&nbsp; Past performance ≠ future tokens</p>
+    </main>
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <script src="app.js"></script>
+</body>
+</html>

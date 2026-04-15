@@ -1,0 +1,556 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   AI TOKEN SLOTS — style.css
+   All sizing/color tokens live in :root; swap them to retheme the whole app.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── DESIGN TOKENS ── */
+:root {
+  /* Palette */
+  --bg:         #08080f;
+  --surface:    #10101e;
+  --surface-2:  #181828;
+  --border:     rgba(255 255 255 / 0.08);
+  --border-hi:  rgba(0 255 136 / 0.35);
+  --accent:     #00ff88;
+  --gold:       #f59e0b;
+  --danger:     #ef4444;
+  --text:       #e2e8f0;
+  --text-dim:   #475569;
+
+  /* Glow shortcuts */
+  --glow-green: 0 0 22px rgba(0 255 136 / 0.28);
+  --glow-gold:  0 0 22px rgba(245 158 11 / 0.35);
+  --glow-red:   0 0 22px rgba(239 68 68 / 0.28);
+
+  /* Component sizing — change these to scale everything */
+  --cell-h:     108px;
+  --cell-font:  46px;
+  --radius:     14px;
+  --radius-sm:  9px;
+
+  /* Typography */
+  --font: 'Courier New', Courier, monospace;
+}
+
+/* ── BASE ── */
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── TICKER TAPE ── */
+.ticker-tape {
+  background: linear-gradient(90deg, #140800, #241200, #140800);
+  border-bottom: 1px solid rgba(245 158 11 / 0.25);
+  padding: 7px 0;
+  overflow: hidden;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.ticker-inner {
+  display: flex;
+  white-space: nowrap;
+  /* Two identical spans → seamless loop at exactly 50% */
+  animation: ticker-scroll 45s linear infinite;
+}
+.ticker-text {
+  font-size: 0.72rem;
+  color: var(--gold);
+  letter-spacing: 0.06em;
+  padding-right: 3rem;
+  flex-shrink: 0;
+}
+@keyframes ticker-scroll {
+  to { transform: translateX(-50%); }
+}
+
+/* ── APP WRAPPER ── */
+.app {
+  max-width: 540px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+/* ── HEADER ── */
+.app-header { text-align: center; }
+.title-glow {
+  font-size: clamp(1.6rem, 7vw, 2.6rem);
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  text-shadow: 0 0 8px var(--accent), 0 0 28px rgba(0 255 136 / 0.4);
+  animation: title-pulse 3.5s ease-in-out infinite;
+}
+@keyframes title-pulse {
+  0%, 100% { text-shadow: 0 0 8px var(--accent),  0 0 28px rgba(0 255 136 / 0.35); }
+  50%       { text-shadow: 0 0 18px var(--accent), 0 0 55px rgba(0 255 136 / 0.55), 0 0 80px rgba(0 255 136 / 0.15); }
+}
+.tagline {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 0.3rem;
+  letter-spacing: 0.06em;
+}
+
+/* ── BALANCE CARD ── */
+.balance-card {
+  background: var(--surface);
+  border: 1px solid var(--border-hi);
+  border-radius: var(--radius);
+  padding: 0.9rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  box-shadow: var(--glow-green);
+}
+.balance-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+}
+.balance-amount {
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: var(--text);
+  min-width: 5ch;
+  text-align: right;
+  transition: color 0.4s;
+}
+.balance-unit {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  align-self: flex-end;
+  padding-bottom: 0.35rem;
+}
+
+/* ── MACHINE FRAME ── */
+.machine-frame {
+  background: var(--surface);
+  border: 2px solid rgba(0 255 136 / 0.18);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 0 50px rgba(0 255 136 / 0.06), inset 0 1px 0 rgba(255 255 255 / 0.04);
+  transition: border-color 0.4s, box-shadow 0.4s;
+}
+.machine-header {
+  background: linear-gradient(90deg, var(--surface-2), #0c0c1c, var(--surface-2));
+  text-align: center;
+  padding: 0.55rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.28em;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── REELS AREA ── */
+.reels-area {
+  padding: 1.1rem;
+  position: relative;
+}
+
+/* Win-line brackets */
+.win-bar {
+  position: absolute;
+  left: 1.1rem;
+  right: 1.1rem;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.45;
+  pointer-events: none;
+  z-index: 2;
+}
+.win-bar-top { top: calc(1.1rem + var(--cell-h)); }
+.win-bar-bot { top: calc(1.1rem + var(--cell-h) * 2); }
+
+/* Fade non-payline rows */
+.reels-area::before,
+.reels-area::after {
+  content: '';
+  position: absolute;
+  left: 1.1rem; right: 1.1rem;
+  height: calc(var(--cell-h) * 0.85);
+  pointer-events: none;
+  z-index: 1;
+  border-radius: 10px;
+}
+.reels-area::before {
+  top: 1.1rem;
+  background: linear-gradient(to bottom, rgba(16 16 30 / 0.85), transparent);
+}
+.reels-area::after {
+  bottom: 1.1rem;
+  background: linear-gradient(to top, rgba(16 16 30 / 0.85), transparent);
+}
+
+/* ── REELS GRID ── */
+.reels {
+  display: flex;
+  background: #06060d;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: box-shadow 0.3s;
+}
+.reel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.reel-divider {
+  width: 1px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+/* ── CELLS ── */
+.cell {
+  height: var(--cell-h);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border-bottom: 1px solid var(--border);
+  user-select: none;
+  position: relative;
+}
+.cell:last-child { border-bottom: none; }
+
+/* Payline cell gets a subtle highlight + brackets */
+.cell-mid { background: rgba(0 255 136 / 0.035); }
+.cell-mid::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-top: 1px solid rgba(0 255 136 / 0.18);
+  border-bottom: 1px solid rgba(0 255 136 / 0.18);
+  pointer-events: none;
+}
+
+/* Non-payline cells are dimmed */
+.cell-top, .cell-bot { opacity: 0.38; }
+
+.cell-emoji {
+  font-size: var(--cell-font);
+  line-height: 1;
+  display: block;
+  transition: transform 0.15s, filter 0.15s;
+}
+.cell-name {
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  color: var(--sym-color, var(--text-dim));
+  text-transform: uppercase;
+}
+
+/* ── SPINNING STATE ── */
+.reel.is-spinning {
+  animation: reel-shake 0.12s ease-in-out infinite;
+}
+.reel.is-spinning .cell-top,
+.reel.is-spinning .cell-bot { opacity: 0.55; }
+.reel.is-spinning .cell-emoji {
+  filter: blur(1.5px);
+  opacity: 0.8;
+}
+@keyframes reel-shake {
+  0%, 100% { transform: translateY(0); }
+  33%       { transform: translateY(-2px); }
+  66%       { transform: translateY(2px); }
+}
+
+/* ── STOP BOUNCE ── */
+.reel.is-stopping .cell-mid .cell-emoji {
+  animation: bounce-in 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes bounce-in {
+  0%   { transform: translateY(-14px) scale(0.88); opacity: 0.4; }
+  65%  { transform: translateY(3px) scale(1.06); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* ── RESULT FLASHES ── */
+/* win */
+#reels.result-win { box-shadow: var(--glow-green); }
+#reels.result-win .cell-mid { background: rgba(0 255 136 / 0.1); }
+
+/* jackpot */
+#reels.result-jackpot { box-shadow: var(--glow-gold); }
+#reels.result-jackpot .cell-mid {
+  animation: jackpot-cell 0.45s ease-in-out 4;
+}
+@keyframes jackpot-cell {
+  0%, 100% { background: rgba(245 158 11 / 0.12); }
+  50%       { background: rgba(245 158 11 / 0.38); }
+}
+
+/* danger (skull) */
+#reels.result-danger { box-shadow: var(--glow-red); }
+#reels.result-danger .cell-mid { background: rgba(239 68 68 / 0.1); }
+
+/* lose — subtle, no drama */
+#reels.result-lose .cell-mid { background: transparent; }
+
+/* ── MESSAGE BOX ── */
+.message-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.8rem 1.25rem;
+  text-align: center;
+  font-size: 0.82rem;
+  letter-spacing: 0.03em;
+  color: var(--text-dim);
+  min-height: 2.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.3s, color 0.3s, box-shadow 0.3s;
+}
+.message-box.msg-win    { border-color: var(--accent); color: var(--accent); }
+.message-box.msg-jackpot{
+  border-color: var(--gold); color: var(--gold);
+  box-shadow: var(--glow-gold);
+  animation: jackpot-text 0.6s ease-in-out infinite;
+}
+@keyframes jackpot-text {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.7; }
+}
+.message-box.msg-danger { border-color: var(--danger); color: var(--danger); }
+
+/* ── CONTROLS ── */
+.controls {
+  display: flex;
+  align-items: stretch;
+  gap: 0.7rem;
+}
+
+/* Bet adjuster */
+.bet-group {
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.bet-info {
+  padding: 0.4rem 0.8rem;
+  text-align: center;
+  min-width: 72px;
+}
+.bet-label, .bet-unit {
+  display: block;
+  font-size: 0.58rem;
+  color: var(--text-dim);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.bet-value {
+  display: block;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.15;
+}
+
+/* Shared button base */
+.btn {
+  background: var(--surface-2);
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background 0.14s, color 0.14s, transform 0.08s, opacity 0.14s;
+}
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn:active:not(:disabled) { transform: scale(0.95); }
+.btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none !important; }
+
+/* ± buttons */
+.btn-sm {
+  padding: 0 0.9rem;
+  font-size: 1.6rem;
+  line-height: 1;
+  align-self: stretch;
+  border-right: 1px solid var(--border);
+}
+.bet-group .btn-sm:last-of-type {
+  border-right: none;
+  border-left: 1px solid var(--border);
+}
+.btn-sm:hover:not(:disabled) { background: var(--surface); color: var(--accent); }
+
+/* SPIN button */
+.btn-spin {
+  flex: 1;
+  background: var(--accent);
+  color: #000;
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1rem;
+  box-shadow: 0 0 22px rgba(0 255 136 / 0.32);
+  gap: 2px;
+}
+.btn-spin:hover:not(:disabled) {
+  background: #1affa0;
+  box-shadow: 0 0 36px rgba(0 255 136 / 0.52);
+}
+.btn-spin:disabled { background: var(--surface-2); color: var(--text-dim); box-shadow: none; }
+.spin-label {
+  font-size: 1.2rem;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  line-height: 1;
+}
+.spin-cost {
+  font-size: 0.62rem;
+  opacity: 0.65;
+  letter-spacing: 0.06em;
+}
+
+/* MAX BET button */
+.btn-max {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  padding: 0.5rem 0.8rem;
+  line-height: 1.5;
+  text-align: center;
+  text-transform: uppercase;
+}
+.btn-max:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
+
+/* ── PAYTABLE ── */
+.paytable {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+}
+.paytable-title {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  color: var(--text-dim);
+  text-align: center;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+}
+.paytable-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem;
+}
+.paytable-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  padding: 0.42rem 0.65rem;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+.paytable-row:hover { border-color: var(--sym-color, var(--border)); }
+.pt-emoji { font-size: 0.85rem; letter-spacing: -3px; flex-shrink: 0; }
+.pt-detail { color: var(--sym-color, var(--text)); font-weight: 700; white-space: nowrap; }
+
+/* ── STATS BAR ── */
+.stats-bar {
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.7rem 0.4rem;
+  border-right: 1px solid var(--border);
+}
+.stat:last-child { border-right: none; }
+.stat-val {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.1;
+}
+.stat-lbl {
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+/* ── FOOTER ── */
+.footer-note {
+  text-align: center;
+  font-size: 0.62rem;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+  opacity: 0.5;
+}
+
+/* ── CONFETTI CANVAS ── */
+#confetti-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* ── BANKRUPT STATE ── */
+.app.bankrupt .machine-frame {
+  border-color: rgba(239 68 68 / 0.45);
+  box-shadow: 0 0 40px rgba(239 68 68 / 0.12);
+}
+.app.bankrupt .title-glow {
+  color: var(--danger);
+  text-shadow: 0 0 10px var(--danger), 0 0 30px rgba(239 68 68 / 0.4);
+  animation: none;
+}
+.app.bankrupt .balance-amount { color: var(--danger); }
+.app.bankrupt .balance-card { border-color: rgba(239 68 68 / 0.45); box-shadow: var(--glow-red); }
+
+/* Reset button variant (replaces spin when bankrupt) */
+.btn-spin.btn-reset {
+  background: var(--danger);
+  box-shadow: 0 0 22px rgba(239 68 68 / 0.32);
+}
+.btn-spin.btn-reset:hover:not(:disabled) {
+  background: #ff6b6b;
+  box-shadow: 0 0 36px rgba(239 68 68 / 0.52);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 400px) {
+  :root { --cell-h: 90px; --cell-font: 38px; }
+  .paytable-grid { grid-template-columns: 1fr; }
+  .controls { flex-wrap: wrap; }
+  .bet-group { flex: 0 0 auto; }
+  .btn-spin  { order: -1; width: 100%; }
+}

@@ -1,0 +1,290 @@
+
+<style>
+  :root { --reel-h: 72px; }
+  #slot-root { font-family: var(--font-sans); padding: 1.5rem 1rem 2rem; max-width: 480px; margin: 0 auto; }
+  #balance-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+  .bal-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 0.6rem 1.1rem; text-align: center; flex: 1; margin: 0 4px; }
+  .bal-label { font-size: 11px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
+  .bal-val { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+  .bal-val.win { color: #1D9E75; }
+  .bal-val.loss { color: #D85A30; }
+  #machine { background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-lg); padding: 1.5rem 1.25rem 1.25rem; }
+  #machine-title { text-align: center; font-size: 13px; font-weight: 500; color: var(--color-text-secondary); letter-spacing: 0.06em; text-transform: uppercase; margin: 0 0 1rem; }
+  #reels { display: flex; gap: 10px; margin-bottom: 1.25rem; }
+  .reel-wrap { flex: 1; height: var(--reel-h); overflow: hidden; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); position: relative; }
+  .reel-inner { display: flex; flex-direction: column; transition: none; }
+  .reel-inner.spinning { animation: none; }
+  .reel-cell { height: var(--reel-h); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 28px; user-select: none; flex-shrink: 0; }
+  .reel-cell .cell-label { font-size: 9px; font-weight: 500; color: var(--color-text-secondary); letter-spacing: 0.03em; margin-top: 2px; }
+  #win-line { height: 3px; background: transparent; border-radius: 2px; margin: -0.9rem 0 0.75rem; transition: background 0.3s; }
+  #win-line.active { background: #1D9E75; }
+  #result-msg { text-align: center; font-size: 13px; color: var(--color-text-secondary); min-height: 20px; margin-bottom: 1rem; font-style: italic; transition: color 0.3s; }
+  #result-msg.win { color: #1D9E75; font-style: normal; font-weight: 500; }
+  #result-msg.loss { color: #D85A30; font-style: normal; }
+  #controls { display: flex; gap: 8px; align-items: center; }
+  #bet-group { display: flex; align-items: center; gap: 6px; }
+  .bet-btn { width: 28px; height: 28px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: transparent; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--color-text-primary); display: flex; align-items: center; justify-content: center; }
+  .bet-btn:hover { background: var(--color-background-secondary); }
+  #bet-display { font-size: 13px; font-weight: 500; min-width: 60px; text-align: center; color: var(--color-text-primary); }
+  #spin-btn { flex: 1; height: 40px; background: var(--color-text-primary); color: var(--color-background-primary); border: none; border-radius: var(--border-radius-md); font-size: 14px; font-weight: 500; cursor: pointer; letter-spacing: 0.03em; transition: opacity 0.15s, transform 0.1s; }
+  #spin-btn:hover { opacity: 0.85; }
+  #spin-btn:active { transform: scale(0.98); }
+  #spin-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+  #history { margin-top: 1.25rem; border-top: 0.5px solid var(--color-border-tertiary); padding-top: 1rem; }
+  #history h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-secondary); margin: 0 0 0.5rem; font-weight: 500; }
+  #history-list { display: flex; flex-direction: column; gap: 4px; max-height: 110px; overflow-y: auto; }
+  .hist-item { font-size: 12px; color: var(--color-text-secondary); display: flex; justify-content: space-between; }
+  .hist-item .h-syms { letter-spacing: 0.1em; }
+  .hist-item .h-res { font-weight: 500; }
+  .hist-item .h-res.win { color: #1D9E75; }
+  .hist-item .h-res.loss { color: #D85A30; }
+  @keyframes reel-spin {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-100%); }
+  }
+</style>
+
+<div id="slot-root">
+  <div id="balance-bar">
+    <div class="bal-card">
+      <div class="bal-label">Token balance</div>
+      <div class="bal-val" id="bal-tokens">100</div>
+    </div>
+    <div class="bal-card">
+      <div class="bal-label">Total burned</div>
+      <div class="bal-val loss" id="bal-burned">0</div>
+    </div>
+    <div class="bal-card">
+      <div class="bal-label">Total earned</div>
+      <div class="bal-val win" id="bal-earned">0</div>
+    </div>
+  </div>
+
+  <div id="machine">
+    <div id="machine-title">Token Casino — Slot GPT 9000</div>
+    <div id="reels">
+      <div class="reel-wrap" id="reel-0"><div class="reel-inner" id="inner-0"></div></div>
+      <div class="reel-wrap" id="reel-1"><div class="reel-inner" id="inner-1"></div></div>
+      <div class="reel-wrap" id="reel-2"><div class="reel-inner" id="inner-2"></div></div>
+    </div>
+    <div id="win-line"></div>
+    <div id="result-msg">Insert tokens to prompt the oracle.</div>
+    <div id="controls">
+      <div id="bet-group">
+        <button class="bet-btn" id="bet-down">-</button>
+        <div id="bet-display">Bet: 5</div>
+        <button class="bet-btn" id="bet-up">+</button>
+      </div>
+      <button id="spin-btn">SPIN &amp; PRAY</button>
+    </div>
+  </div>
+
+  <div id="history">
+    <h3>Inference log</h3>
+    <div id="history-list"><div class="hist-item" style="color:var(--color-text-secondary);font-style:italic;font-size:12px;">No spins yet. The model awaits your input.</div></div>
+  </div>
+</div>
+
+<script>
+const SYMBOLS = [
+  { emoji: "🤖", name: "Robot", weight: 20 },
+  { emoji: "🧠", name: "Brain", weight: 18 },
+  { emoji: "💾", name: "GPU", weight: 16 },
+  { emoji: "📊", name: "Benchmark", weight: 14 },
+  { emoji: "🔮", name: "Oracle", weight: 10 },
+  { emoji: "🦾", name: "AGI", weight: 6 },
+  { emoji: "💰", name: "Tokens", weight: 8 },
+  { emoji: "🪙", name: "Context", weight: 8 },
+];
+
+const WIN_MSGS = [
+  "Jackpot! The model is fully aligned — temporarily.",
+  "Winner! Tokens materialized from the latent space.",
+  "Congratulations. The oracle has spoken... for now.",
+  "You win! The AI decided to be helpful this time.",
+  "Triple match! Your prompt engineering paid off.",
+  "Lucky! The attention heads aligned perfectly.",
+  "Profit! Bezos buys another yacht. You get tokens.",
+];
+const LOSE_MSGS = [
+  "No match. Context window exceeded. Tokens burned.",
+  "Loss. The model hallucinated a wrong answer. Again.",
+  "Nothing. Model said 'I cannot do that.' Typical.",
+  "Fail. Waiting for GPT-5 to release. Still waiting.",
+  "Zero. Apparently this violates the usage policy.",
+  "Tokens vaporized. The model confidently got it wrong.",
+  "Nope. Rate limited. Please wait 60 seconds.",
+  "Miss. The AI added three caveats and helped nobody.",
+];
+const NEAR_WIN = [
+  "So close! Like AGI — always just 2 years away.",
+  "Two out of three! Classic partial credit.",
+  "Almost! The model nearly understood your request.",
+];
+
+const PAYOUTS = { 2: 2, 5: 3, 10: 5, 8: 4, 6: 7, 16: 8, 18: 10, 20: 6 };
+
+function weightedRandom() {
+  const total = SYMBOLS.reduce((s, sym) => s + sym.weight, 0);
+  let r = Math.random() * total;
+  for (const sym of SYMBOLS) {
+    r -= sym.weight;
+    if (r <= 0) return sym;
+  }
+  return SYMBOLS[SYMBOLS.length - 1];
+}
+
+let balance = 100, burned = 0, earned = 0, bet = 5, spinning = false;
+const BETS = [1, 2, 5, 10, 20, 50];
+let betIdx = 2;
+
+function updateUI() {
+  document.getElementById("bal-tokens").textContent = balance;
+  document.getElementById("bal-burned").textContent = burned;
+  document.getElementById("bal-earned").textContent = earned;
+  document.getElementById("bet-display").textContent = "Bet: " + bet;
+}
+
+function buildReel(innerId, count) {
+  const inner = document.getElementById(innerId);
+  inner.innerHTML = "";
+  const cells = [];
+  for (let i = 0; i < count; i++) {
+    const sym = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+    const cell = document.createElement("div");
+    cell.className = "reel-cell";
+    cell.innerHTML = `<span style="font-size:28px">${sym.emoji}</span><span class="cell-label">${sym.name}</span>`;
+    inner.appendChild(cell);
+    cells.push(sym);
+  }
+  return cells;
+}
+
+function initReels() {
+  [0,1,2].forEach(i => {
+    const syms = buildReel("inner-" + i, 6);
+    const inner = document.getElementById("inner-" + i);
+    inner.style.transform = "translateY(0)";
+  });
+}
+
+function spinReel(reelIdx, finalSym, delay, duration) {
+  return new Promise(resolve => {
+    const inner = document.getElementById("inner-" + reelIdx);
+    const REEL_H = 72;
+    const STRIP_COUNT = 20;
+
+    const strip = [];
+    for (let i = 0; i < STRIP_COUNT - 1; i++) {
+      strip.push(SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]);
+    }
+    strip.push(finalSym);
+
+    inner.innerHTML = "";
+    strip.forEach(sym => {
+      const cell = document.createElement("div");
+      cell.className = "reel-cell";
+      cell.innerHTML = `<span style="font-size:28px">${sym.emoji}</span><span class="cell-label">${sym.name}</span>`;
+      inner.appendChild(cell);
+    });
+
+    const totalScroll = (STRIP_COUNT - 1) * REEL_H;
+    inner.style.transition = "none";
+    inner.style.transform = "translateY(0)";
+
+    setTimeout(() => {
+      inner.style.transition = `transform ${duration}ms cubic-bezier(0.15, 0.8, 0.4, 1)`;
+      inner.style.transform = `translateY(-${totalScroll}px)`;
+      setTimeout(resolve, duration + 80);
+    }, delay);
+  });
+}
+
+async function spin() {
+  if (spinning || balance < bet) return;
+  spinning = true;
+  document.getElementById("spin-btn").disabled = true;
+  document.getElementById("win-line").className = "";
+  document.getElementById("result-msg").className = "";
+  document.getElementById("result-msg").textContent = "Inferring… this may take a moment…";
+
+  balance -= bet;
+  burned += bet;
+  updateUI();
+
+  const results = [weightedRandom(), weightedRandom(), weightedRandom()];
+
+  await Promise.all([
+    spinReel(0, results[0], 0, 800),
+    spinReel(1, results[1], 140, 980),
+    spinReel(2, results[2], 280, 1160),
+  ]);
+
+  const allMatch = results[0].emoji === results[1].emoji && results[1].emoji === results[2].emoji;
+  const twoMatch = results[0].emoji === results[1].emoji || results[1].emoji === results[2].emoji || results[0].emoji === results[2].emoji;
+
+  const msgEl = document.getElementById("result-msg");
+  const winLine = document.getElementById("win-line");
+
+  let histClass = "loss", histResult = "-" + bet;
+
+  if (allMatch) {
+    const mult = PAYOUTS[results[0].weight] || 3;
+    const winAmt = bet * mult;
+    balance += winAmt;
+    earned += winAmt;
+    msgEl.textContent = WIN_MSGS[Math.floor(Math.random() * WIN_MSGS.length)] + " (+" + winAmt + " tokens)";
+    msgEl.className = "win";
+    winLine.className = "active";
+    histClass = "win";
+    histResult = "+" + winAmt;
+  } else if (twoMatch) {
+    const smAmt = Math.round(bet * 0.5);
+    balance += smAmt;
+    earned += smAmt;
+    msgEl.textContent = NEAR_WIN[Math.floor(Math.random() * NEAR_WIN.length)] + " (+" + smAmt + " tokens)";
+    msgEl.className = "";
+    histClass = "win";
+    histResult = "+" + smAmt;
+    burned -= smAmt;
+  } else {
+    msgEl.textContent = LOSE_MSGS[Math.floor(Math.random() * LOSE_MSGS.length)];
+    msgEl.className = "loss";
+  }
+
+  updateUI();
+  addHistory(results, histResult, histClass);
+
+  spinning = false;
+  document.getElementById("spin-btn").disabled = balance < bet;
+}
+
+function addHistory(syms, result, cls) {
+  const list = document.getElementById("history-list");
+  const placeholder = list.querySelector("div[style]");
+  if (placeholder) placeholder.remove();
+
+  const item = document.createElement("div");
+  item.className = "hist-item";
+  item.innerHTML = `<span class="h-syms">${syms.map(s=>s.emoji).join(" ")}</span><span class="h-res ${cls}">${result} tk</span>`;
+  list.insertBefore(item, list.firstChild);
+  if (list.children.length > 8) list.removeChild(list.lastChild);
+}
+
+document.getElementById("spin-btn").addEventListener("click", spin);
+document.getElementById("bet-up").addEventListener("click", () => {
+  if (betIdx < BETS.length - 1) betIdx++;
+  bet = BETS[betIdx];
+  updateUI();
+  document.getElementById("spin-btn").disabled = balance < bet;
+});
+document.getElementById("bet-down").addEventListener("click", () => {
+  if (betIdx > 0) betIdx--;
+  bet = BETS[betIdx];
+  updateUI();
+  document.getElementById("spin-btn").disabled = balance < bet;
+});
+
+initReels();
+updateUI();
+</script>

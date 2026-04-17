@@ -1,0 +1,198 @@
+
+<style>
+  :root { --reel-h: 80px; }
+  #machine { max-width: 480px; margin: 1.5rem auto; font-family: var(--font-sans); }
+  #banner { text-align: center; margin-bottom: 1rem; }
+  #banner h2 { font-size: 22px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 2px; }
+  #banner p { font-size: 13px; color: var(--color-text-secondary); margin: 0; }
+  #stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 1rem; }
+  .stat { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 12px; text-align: center; }
+  .stat-label { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 2px; }
+  .stat-val { font-size: 20px; font-weight: 500; color: var(--color-text-primary); }
+  #cabinet { background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-lg); padding: 20px; }
+  #reels-wrap { display: flex; gap: 10px; justify-content: center; margin-bottom: 16px; }
+  .reel-win { background: #FFF8DC; } 
+  .reel { flex: 1; height: var(--reel-h); background: var(--color-background-secondary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); display: flex; align-items: center; justify-content: center; font-size: 36px; overflow: hidden; position: relative; transition: background 0.3s; }
+  .reel-inner { display: flex; flex-direction: column; align-items: center; transition: transform 0.05s linear; }
+  .reel-sym { height: var(--reel-h); display: flex; align-items: center; justify-content: center; font-size: 36px; }
+  #msg-box { min-height: 36px; text-align: center; font-size: 14px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 14px; padding: 6px 10px; border-radius: var(--border-radius-md); background: var(--color-background-secondary); transition: color 0.3s; }
+  #msg-box.win { color: #3B6D11; background: #EAF3DE; }
+  #msg-box.lose { color: #993C1D; background: #FAECE7; }
+  #spin-btn { width: 100%; padding: 13px; font-size: 16px; font-weight: 500; cursor: pointer; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); transition: background 0.15s, transform 0.1s; }
+  #spin-btn:hover { background: var(--color-background-secondary); }
+  #spin-btn:active { transform: scale(0.98); }
+  #spin-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+  #paytable { margin-top: 14px; border-top: 0.5px solid var(--color-border-tertiary); padding-top: 12px; }
+  .pay-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+  .pay-syms { font-size: 16px; letter-spacing: 2px; }
+  .pay-prize { color: var(--color-text-primary); font-weight: 500; }
+  #ticker { font-size: 11px; text-align: center; color: var(--color-text-tertiary); margin-top: 10px; }
+</style>
+
+<div id="machine">
+  <div id="banner">
+    <h2>Token Casino</h2>
+    <p>Where your compute budget goes to die</p>
+  </div>
+
+  <div id="stats">
+    <div class="stat"><div class="stat-label">Token balance</div><div class="stat-val" id="s-tokens">50</div></div>
+    <div class="stat"><div class="stat-label">Spins used</div><div class="stat-val" id="s-spins">0</div></div>
+    <div class="stat"><div class="stat-label">Hallucinations</div><div class="stat-val" id="s-wins">0</div></div>
+  </div>
+
+  <div id="cabinet">
+    <div id="reels-wrap">
+      <div class="reel" id="r0"><div class="reel-inner" id="ri0"></div></div>
+      <div class="reel" id="r1"><div class="reel-inner" id="ri1"></div></div>
+      <div class="reel" id="r2"><div class="reel-inner" id="ri2"></div></div>
+    </div>
+    <div id="msg-box">Insert tokens to begin inference...</div>
+    <button id="spin-btn" onclick="spin()">Spin (-3 tokens)</button>
+    <div id="paytable">
+      <div class="pay-row"><span class="pay-syms">🧠🧠🧠</span><span class="pay-prize">+50 tokens — Sentient AGI achieved</span></div>
+      <div class="pay-row"><span class="pay-syms">💀💀💀</span><span class="pay-prize">+40 tokens — Total alignment failure</span></div>
+      <div class="pay-row"><span class="pay-syms">📄📄📄</span><span class="pay-prize">+30 tokens — Training data leak</span></div>
+      <div class="pay-row"><span class="pay-syms">🤖🤖🤖</span><span class="pay-prize">+25 tokens — Robot uprising begins</span></div>
+      <div class="pay-row"><span class="pay-syms">⚡⚡⚡</span><span class="pay-prize">+20 tokens — GPU overclocked (fire)</span></div>
+      <div class="pay-row"><span class="pay-syms">Any 2 alike</span><span class="pay-prize">+5 tokens — Partial hallucination</span></div>
+    </div>
+    <div id="ticker" id="ticker">* Results not guaranteed. Model may confidently be wrong. Tokens non-refundable.</div>
+  </div>
+</div>
+
+<script>
+const SYMS = ['🧠','📄','🤖','⚡','💀','🌀','🗂️','💬'];
+const COST = 3;
+let tokens = 50, spins = 0, wins = 0;
+let spinning = false;
+
+function buildReels() {
+  for (let i = 0; i < 3; i++) {
+    const ri = document.getElementById('ri'+i);
+    ri.innerHTML = '';
+    const pool = [];
+    for (let j = 0; j < 20; j++) pool.push(SYMS[Math.floor(Math.random()*SYMS.length)]);
+    pool.forEach(s => {
+      const d = document.createElement('div');
+      d.className = 'reel-sym';
+      d.textContent = s;
+      ri.appendChild(d);
+    });
+  }
+}
+
+buildReels();
+
+function updateStats() {
+  document.getElementById('s-tokens').textContent = tokens;
+  document.getElementById('s-spins').textContent = spins;
+  document.getElementById('s-wins').textContent = wins;
+}
+
+function setMsg(text, cls) {
+  const el = document.getElementById('msg-box');
+  el.textContent = text;
+  el.className = cls ? 'win' : (cls===false ? 'lose' : '');
+}
+
+function spinReel(idx, finalSym, duration) {
+  return new Promise(resolve => {
+    const ri = document.getElementById('ri'+idx);
+    const symH = 80;
+    const steps = Math.floor(duration / 40);
+    let step = 0;
+    function tick() {
+      ri.style.transform = `translateY(-${(step % ri.children.length)*symH}px)`;
+      step++;
+      if (step < steps) {
+        setTimeout(tick, 40);
+      } else {
+        const syms = [...SYMS];
+        syms[0] = finalSym;
+        ri.innerHTML = '';
+        syms.slice(0,5).forEach((s,i) => {
+          const d = document.createElement('div');
+          d.className = 'reel-sym';
+          d.textContent = s;
+          ri.appendChild(d);
+        });
+        ri.style.transform = 'translateY(0)';
+        resolve();
+      }
+    }
+    tick();
+  });
+}
+
+function evaluate(r) {
+  const msgs = [
+    "Context window exceeded. Try again.",
+    "Model confused itself. Loss: 3 tokens.",
+    "Inference failed. RLHF wept.",
+    "Hallucinated wrong answer. Confidently.",
+    "Fine-tuning required. Bill pending.",
+    "Prompt was ambiguous. Obviously your fault.",
+    "Ran out of attention heads. Typical.",
+    "Softmax exploded. Total loss."
+  ];
+  if (r[0]===r[1] && r[1]===r[2]) {
+    const prizes = {'🧠':50,'💀':40,'📄':30,'🤖':25,'⚡':20};
+    const prize = prizes[r[0]] || 15;
+    const winMsgs = {
+      '🧠':'AGI achieved! (Briefly. Then it asked for a salary.)',
+      '💀':'Total alignment failure! Technically a win.',
+      '📄':'Training data leaked! The lawyers are calling.',
+      '🤖':'Robot uprising detected! Promoted to overlord.',
+      '⚡':'GPU is on fire! But throughput is amazing!'
+    };
+    return { delta: prize, msg: winMsgs[r[0]] || `Jackpot! +${prize} tokens`, win: true };
+  }
+  if (r[0]===r[1] || r[1]===r[2] || r[0]===r[2]) {
+    return { delta: 5, msg: 'Partial hallucination. Close enough. +5 tokens.', win: true };
+  }
+  return { delta: 0, msg: msgs[Math.floor(Math.random()*msgs.length)], win: false };
+}
+
+async function spin() {
+  if (spinning || tokens < COST) return;
+  spinning = true;
+  tokens -= COST;
+  spins++;
+  updateStats();
+  document.getElementById('spin-btn').disabled = true;
+  setMsg('Running inference... burning tokens...');
+  for (let i = 0; i < 3; i++) {
+    document.getElementById('r'+i).classList.remove('reel-win');
+  }
+
+  const finals = [
+    SYMS[Math.floor(Math.random()*SYMS.length)],
+    SYMS[Math.floor(Math.random()*SYMS.length)],
+    SYMS[Math.floor(Math.random()*SYMS.length)]
+  ];
+  // slight jackpot bias for fun (10% triple chance)
+  if (Math.random() < 0.1) finals[0] = finals[1] = finals[2] = SYMS[Math.floor(Math.random()*SYMS.length)];
+
+  await Promise.all([
+    spinReel(0, finals[0], 800),
+    spinReel(1, finals[1], 1100),
+    spinReel(2, finals[2], 1450)
+  ]);
+
+  const result = evaluate(finals);
+  tokens += result.delta;
+  if (result.win) { wins++; for (let i=0;i<3;i++) document.getElementById('r'+i).classList.add('reel-win'); }
+  updateStats();
+  setMsg(result.msg, result.win ? true : false);
+
+  if (tokens < COST) {
+    document.getElementById('spin-btn').textContent = 'Out of tokens — request more compute';
+    document.getElementById('spin-btn').disabled = true;
+    setMsg('Insufficient tokens. Have you tried prompt engineering?', false);
+  } else {
+    document.getElementById('spin-btn').disabled = false;
+  }
+  spinning = false;
+}
+</script>
